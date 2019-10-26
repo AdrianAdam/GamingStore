@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang=en>
+	<head>
+		<meta charset=UTF-8>
+		<title>Gaming store</title>
+
+		<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css>
+		<link rel=stylesheet href=index.css>
+		<script src=functions.js></script>
+	</head>
+
+	<body>
+		<header>
+			<div class=head>
+				<div class=topInfo>
+					<div id=appTitle>
+						<h1>Gaming Store</h1>
+					</div>
+					<div id=accountSection>
+						<a class=btn id=loginButton>Login</a>
+						<a class=btn id=accountButton><span id=userEmail></span></a>
+					</div>
+				</div>
+
+				<div class=navBar>
+					<a class=btn onclick="goToPage('store')"><h2>Store</h2></a>
+					<a class=btn onclick="goToPage('library')"><h2>Library</h2></a>
+					<a class=btn onclick="goToPage('community')"><h2>Community</h2></a>
+					<a class=btn onclick="goToPage('profile')"><h2>Profile</h2></a>
+				</div>
+			</div>
+		</header>
+
+		<section class="pages store">
+
+		</section>
+
+		<section class="pages library" style="display: none">
+
+		</section>
+
+		<section class="pages community" style="display: none">
+
+		</section>
+
+		<section class="pages profile" style="display: none">
+
+		</section>
+
+		<footer>
+			<div class=footer>
+				<div class=footerLeft>
+					<a class="btn btn-danger" onclick=quitApp()><span class="glyphicon glyphicon-off"></span> Exit</a>
+					<span id=version>Version <span id=versionNumber></span></span>
+				</div>
+				<div class=footerRight>
+					<a class="btn btn-info" onclick=openConsole()><span class="glyphicon glyphicon-log-in"></span></a>
+				</div>
+			</div>
+		</footer>
+	</body>
+
+	<script>
+		updateVersionNumber();
+		renderPages();
+	</script>
+</html>

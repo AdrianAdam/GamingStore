@@ -1,0 +1,75 @@
+body {
+	background-color: black;
+	color: white;
+}
+
+#topInfo #navBar #head {
+	width: 100%;
+}
+
+#appTitle {
+	float:left;
+	margin-left: 20px;
+	width: 49%;
+}
+
+#accountSection {
+	float: right;
+	height: 70px;
+	text-align: right;
+	vertical-align: middle;
+	width: 49%;
+}
+
+#accountButton {
+	display: none;
+}
+
+#loginButton, #accountButton {
+	font-size: 18px;
+	margin-top: 20px;
+}
+
+.navBar {
+	margin-left: 10px;
+}
+
+.pages {
+	margin-left: 20px;
+}
+
+.footer {
+	bottom: 0;
+	color: white;
+	height: 35px;
+	left: 0;
+	margin-bottom: 10px;
+	position: fixed;
+	width: 100%;
+}
+
+.footerLeft {
+	float: left;
+	text-align: left;
+	width: 50%;
+}
+
+.footerLeft a {
+	margin-left: 20px;
+}
+
+#version {
+	color: white;
+	margin-left: 10px;
+}
+
+.footerRight {
+	color: white;
+	float: right;
+	text-align: right;
+	width:50%;
+}
+
+.footerRight a {
+	margin-right: 20px;
+}

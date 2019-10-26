@@ -1,0 +1,1 @@
+A gaming store like steam made with Electron and Node JS for a school project.
