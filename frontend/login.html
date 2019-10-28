@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang=en>
+	<head>
+		<title>Login / Create account</title>
+
+		<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css>
+		<link rel=stylesheet href=index.css>
+		<script src=functions.js></script>
+	</head>
+
+	<body>
+		<div class=login>
+			<h3>Login</h3><br>
+			<input type="text" placeholder="Email" id=loginEmail name=loginEmail required><br>
+			<br>
+			<input type="password" placeholder="Password" id=loginPass name=loginPass required><br>
+			<br>
+			<span id=loginStatusText></span><br>
+			<br>
+			<a class="btn btn-primary" onclick="login()">Login</a>
+		</div>
+		<div class=register>
+			<h3>Register</h3><br>
+			<input type="text" placeholder="Email" id=registerEmail name=registerEmail required><br>
+			<br>
+			<input type="password" placeholder="Password" id=registerPass name=registerPass required><br>
+			<br>
+			<span id=registerStatusText></span><br>
+			<br>
+			<a class="btn btn-primary" onclick="register()">Register</a>
+		</div>
+	</body>
+
+</html>

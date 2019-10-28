@@ -1,10 +1,14 @@
 "use strict";
 
 const { remote } = require("electron");
+const BrowserWindow = remote.BrowserWindow;
 const app = remote.app;
 const win = remote.getCurrentWindow();
-const StoreManagement = require("../backend/StoreManagement");
-const store = new StoreManagement();
+const BackendClient = require("./BackendClient");
+const backendClient = new BackendClient();
+
+window.remote = remote; 
+let secondWindow = null;
 
 
 function quitApp()
@@ -23,7 +27,7 @@ function openConsole()
 
 function updateVersionNumber()
 {
-	document.getElementById("versionNumber").innerText = remote.app.getVersion();
+	document.getElementById("versionNumber").innerText = window.remote.app.getVersion();
 }
 
 
@@ -46,10 +50,50 @@ function goToPage(strPageName)
 
 
 /**
- * We call functions from StoreManagement, ProfileManagement, LibraryManagement, CommunityManagement
- * to load data that's available on database.
+ * Opens a new BrowserWindow based on file "login.html"
  */
-function renderPages()
+function createLoginPage()
 {
+	secondWindow = new BrowserWindow({
+		width: 640,
+		height: 320,
+		webPreferences: {
+			nodeIntegration: true,
+			webSecurity: true,
+			allowRunningInsecureContent: false
+		}
+	});
+	secondWindow.webContents.openDevTools();
+	secondWindow.setMenuBarVisibility(false);
+	secondWindow.setAutoHideMenuBar(true);
 
+	secondWindow.loadFile("frontend/login.html");
+
+	secondWindow.on("closed", () => {
+		secondWindow = null;
+	});
+}
+
+
+async function login()
+{
+	await backendClient.login(
+		document.getElementById("loginEmail").value,
+		document.getElementById("loginPass").value
+	);
+}
+
+
+async function register()
+{
+	await backendClient.createAccount(
+		document.getElementById("registerEmail").value,
+		document.getElementById("registerPass").value
+	);
+}
+
+
+async function logout()
+{
+	await backendClient.logoutCurrentUser();
 }

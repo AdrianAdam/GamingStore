@@ -6,7 +6,8 @@
 
 		<link rel=stylesheet href=https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css>
 		<link rel=stylesheet href=index.css>
-		<script src=functions.js></script>
+		<script type=text/javascript src=functions.js></script>
+		<script type=text/javascript src=FrontendEndpoint.js></script>
 	</head>
 
 	<body>
@@ -17,8 +18,9 @@
 						<h1>Gaming Store</h1>
 					</div>
 					<div id=accountSection>
-						<a class=btn id=loginButton>Login</a>
+						<a class=btn id=loginButton onclick=createLoginPage()>Login</a>
 						<a class=btn id=accountButton><span id=userEmail></span></a>
+						<a class=btn id=logoutButton onclick=logout()>Logout</a>
 					</div>
 				</div>
 
@@ -62,6 +64,6 @@
 
 	<script>
 		updateVersionNumber();
-		renderPages();
+		detectUserChange();
 	</script>
 </html>

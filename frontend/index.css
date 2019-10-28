@@ -21,11 +21,12 @@ body {
 	width: 49%;
 }
 
-#accountButton {
+#accountButton, #logoutButton {
 	display: none;
+	text-align: right;
 }
 
-#loginButton, #accountButton {
+#loginButton, #accountButton, #logoutButton {
 	font-size: 18px;
 	margin-top: 20px;
 }
@@ -36,6 +37,23 @@ body {
 
 .pages {
 	margin-left: 20px;
+}
+
+.login {
+	float: left;
+	text-align: center;
+	width: 50%;
+}
+
+.register {
+	float: left;
+	text-align: center;
+	width: 50%;
+}
+
+input {
+	background-color: white;
+	color: black;
 }
 
 .footer {
