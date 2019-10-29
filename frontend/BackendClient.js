@@ -33,6 +33,28 @@ class BackendClient {
 	{
 		await backendEndpoint.logoutCurrentUser();
 	}
+
+
+	/**
+	 * Searches for games in some paths.
+	 * 
+	 * @returns {object}
+	 */
+	async getInstalledGames()
+	{
+		return await backendEndpoint.getInstalledGames();
+	}
+
+
+	/**
+	 * Launches the currently selected game.
+	 * 
+	 * @param {string} strPath 
+	 */
+	async launchGame(strPath)
+	{
+		await backendEndpoint.launchGame(strPath);
+	}
 }
 
 module.exports = BackendClient;

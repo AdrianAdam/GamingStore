@@ -97,3 +97,97 @@ async function logout()
 {
 	await backendClient.logoutCurrentUser();
 }
+
+
+async function generateLibraryPage()
+{
+	const objInstalledGames = await backendClient.getInstalledGames();
+
+	const elGamesDiv = document.getElementById("gamesList");
+	const elGameDetailsDiv = document.getElementById("gameDetails");
+
+	let bFirstGame = true;
+
+	for(let strKey in objInstalledGames)
+	{
+		// Creates list of games
+		const elAnchorListGames = document.createElement("a");
+		elAnchorListGames.classList = "btn btn-primary";
+		elAnchorListGames.style.width = "100%";
+		elAnchorListGames.style.textAlign = "left";
+		elAnchorListGames.addEventListener(
+			"click",
+			(() => {
+				const arrGamesDetails = document.getElementsByClassName("game");
+
+				for(let i = 0; i < arrGamesDetails.length; i++)
+				{
+					if(arrGamesDetails[i].id === strKey)
+					{
+						arrGamesDetails[i].style.display = "?";
+					}
+					else
+					{
+						arrGamesDetails[i].style.display = "none";
+					}
+				}
+			})
+		);
+
+		const elSpan = document.createElement("span");
+		elSpan.innerHTML = strKey;
+
+		const elDivListGames = document.createElement("div");
+
+		elAnchorListGames.appendChild(elSpan);
+		elDivListGames.appendChild(elAnchorListGames);
+		elGamesDiv.appendChild(elDivListGames);
+		elGamesDiv.appendChild(document.createElement("br"));
+
+		// Creates game details page
+		const elTitle = document.createElement("h3");
+		elTitle.innerHTML = strKey;
+
+		const elDivGameDetails = document.createElement("div");
+		elDivGameDetails.classList = "game";
+		elDivGameDetails.id = strKey;
+
+		if(!bFirstGame)
+		{
+			elDivGameDetails.style.display = "none";
+		}
+
+		const elAnchorGameDetails = document.createElement("a");
+		elAnchorGameDetails.innerHTML = "Launch game";
+		elAnchorGameDetails.classList = "btn btn-primary";
+		elAnchorGameDetails.addEventListener(
+			"click",
+			(async() => {
+				await launchGame(objInstalledGames[strKey]);
+			})
+		)
+
+		const elParagraph = document.createElement("p");
+		elParagraph.innerHTML = "here will be game details";
+
+		elDivGameDetails.appendChild(elTitle);
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(elAnchorGameDetails);
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(elParagraph);
+
+		elGameDetailsDiv.appendChild(elDivGameDetails);
+	}
+}
+
+
+/**
+ * Launches the currently selected game.
+ * 
+ * @param {string} strPath 
+ */
+async function launchGame(strPath)
+{
+	await backendClient.launchGame(strPath);
+}
