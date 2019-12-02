@@ -17,10 +17,11 @@ class BackendEndpoint {
 	 * 
 	 * @param {string} strEmail 
 	 * @param {string} strPassword 
+	 * @param {string} strUsername
 	 */
-	async login(strEmail, strPassword)
+	async login(strEmail, strPassword, strUsername)
 	{
-		await DB.signIn(strEmail, strPassword);
+		await DB.signIn(strEmail, strPassword, strUsername);
 	}
 
 
@@ -29,13 +30,17 @@ class BackendEndpoint {
 	 * 
 	 * @param {string} strEmail 
 	 * @param {string} strPassword 
+	 * @param {string} strUsername
 	 */
-	async createAccount(strEmail, strPassword)
+	async createAccount(strEmail, strPassword, strUsername)
 	{
-		await DB.createUserAccount(strEmail, strPassword);
+		await DB.createUserAccount(strEmail, strPassword, strUsername);
 	}
 
 
+	/**
+	 * Used to logout the user.
+	 */
 	async logoutCurrentUser()
 	{
 		await DB.logoutUser();
@@ -81,6 +86,54 @@ class BackendEndpoint {
 	async launchGame(strPath)
 	{
 		child_process.exec(strPath);
+	}
+
+
+	/**
+	 * Returns a list of all registered users;
+	 * 
+	 * @returns {string[]}
+	 */
+	async retrieveUsers()
+	{
+		return await DB.retrieveUsers();
+	}
+
+
+	/**
+	 * Verifies if the user is logged in.
+	 * 
+	 * @returns {string}
+	 */
+	async checkLoginStatus()
+	{
+		return await DB.checkLoginStatus();
+	}
+
+
+	/**
+	 * Adds a person to the friends list.
+	 * 
+	 * @param {string} strFriendUsername
+	 * 
+	 * @returns {string}
+	 */
+	async addFriend(strFriendUsername)
+	{
+		return await DB.addFriend(strFriendUsername);
+	}
+
+
+	/**
+	 * Removes a friend from the friends list.
+	 * 
+	 * @param {string} strFriendUsername 
+	 * 
+	 * @returns {string}
+	 */
+	async removeFriend(strFriendUsername)
+	{
+		return await DB.removeFriend(strFriendUsername);
 	}
 }
 

@@ -22,7 +22,6 @@ body {
 }
 
 #accountButton, #logoutButton {
-	display: none;
 	text-align: right;
 }
 
@@ -67,6 +66,26 @@ input {
 	float: left;
 	margin-left: 20px;
 	width: 80%;
+}
+
+#communityHead {
+	margin-top: 30px;
+}
+
+#searchedFriend {
+	font-size: 16px;
+	margin-top: 10px;
+}
+
+#searchedFriendSpan {
+	margin-right: 5px;
+}
+
+#searchFriend {
+	border-radius: 25px;
+	height: 30px;
+	text-align: center;
+	width: 300px;
 }
 
 .footer {

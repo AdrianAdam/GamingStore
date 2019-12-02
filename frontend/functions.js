@@ -79,7 +79,7 @@ async function login()
 {
 	await backendClient.login(
 		document.getElementById("loginEmail").value,
-		document.getElementById("loginPass").value
+		document.getElementById("loginPass").value,
 	);
 }
 
@@ -88,7 +88,8 @@ async function register()
 {
 	await backendClient.createAccount(
 		document.getElementById("registerEmail").value,
-		document.getElementById("registerPass").value
+		document.getElementById("registerPass").value,
+		document.getElementById("registerUsername").value
 	);
 }
 
@@ -190,4 +191,81 @@ async function generateLibraryPage()
 async function launchGame(strPath)
 {
 	await backendClient.launchGame(strPath);
+}
+
+
+/**
+ * Adds all users to an autocomplete input.
+ */
+async function autocompleteCommunitySearch()
+{
+	const elDatalist = document.getElementById("datalistAllUsers");
+	const arrUsernames = await backendClient.retrieveUsers();
+
+	for(let i = 0; i < arrUsernames.length; i++)
+	{
+		const elOption = document.createElement("option");
+		elOption.setAttribute("value", arrUsernames[i]);
+		elDatalist.appendChild(elOption);
+	}
+}
+
+
+/**
+ * Verifies if the user is logged in.
+ */
+async function checkLoginStatus()
+{
+	setInterval(async () => {
+		const strResponse = await backendClient.checkLoginStatus();
+
+		if(strResponse && strResponse !== "")
+		{
+			document.getElementById("userDisplayName").textContent = strResponse;
+			document.getElementById("loginButton").style.display = "none";
+			document.getElementById("accountButton").style.display = "";
+			document.getElementById("logoutButton").style.display = "";
+		}
+		else
+		{
+			document.getElementById("loginButton").style.display = "";
+			document.getElementById("accountButton").style.display = "none";
+			document.getElementById("logoutButton").style.display = "none";
+		}
+	}, 5 * 1000);
+}
+
+
+async function initializeFriendsFunctions()
+{
+	const elInputSearchFriend = document.getElementById("searchFriend");
+	elInputSearchFriend.addEventListener(
+		"change",
+		() => { 
+			if(elInputSearchFriend.value)
+			{
+				document.getElementById("searchedFriendSpan").textContent = elInputSearchFriend.value;
+				document.getElementById("searchedFriend").style.display = "";
+			}
+			else
+			{
+				document.getElementById("searchedFriend").style.display = "none";
+			}
+	});
+
+	document.getElementById("addSearchedFriend").addEventListener(
+		"click",
+		async () => {
+			const strResponse = await backendClient.addFriend(document.getElementById("searchedFriendSpan").textContent);
+			alert(strResponse);
+		}
+	);
+
+	document.getElementById("removeSearchedFriend").addEventListener(
+		"click",
+		async () => {
+			const strResponse = await backendClient.removeFriend(document.getElementById("searchedFriendSpan").textContent);
+			alert(strResponse);
+		}
+	);
 }

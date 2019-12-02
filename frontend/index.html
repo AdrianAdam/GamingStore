@@ -19,8 +19,8 @@
 					</div>
 					<div id=accountSection>
 						<a class=btn id=loginButton onclick=createLoginPage()>Login</a>
-						<a class=btn id=accountButton><span id=userEmail></span></a>
-						<a class=btn id=logoutButton onclick=logout()>Logout</a>
+						<a class=btn id=accountButton style="display: none;"><span id=userDisplayName></span></a>
+						<a class=btn id=logoutButton style="display: none;" onclick=logout()>Logout</a>
 					</div>
 				</div>
 
@@ -45,7 +45,17 @@
 		</section>
 
 		<section class="pages community" style="display: none">
-
+			<div id=communityHead style="width: 100%; text-align: center;">
+				<input type=text id=searchFriend placeholder="Search for a user..." list=datalistAllUsers>
+				<datalist id=datalistAllUsers></datalist>
+				<br>
+				<div id=searchedFriend style="display: none;">
+					<span id=searchedFriendSpan></span>
+					<button class="btn btn-success" id=addSearchedFriend><span class="glyphicon glyphicon-ok"></span></button>
+					<button class="btn btn-danger" id=removeSearchedFriend><span class="glyphicon glyphicon-remove"></span></button>
+				</div>
+			</div>
+			<div id=communityPosts></div>
 		</section>
 
 		<section class="pages profile" style="display: none">
@@ -68,5 +78,8 @@
 	<script>
 		updateVersionNumber();
 		generateLibraryPage();
+		autocompleteCommunitySearch();
+		checkLoginStatus();
+		initializeFriendsFunctions();
 	</script>
 </html>

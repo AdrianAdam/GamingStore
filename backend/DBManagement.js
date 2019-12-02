@@ -34,17 +34,23 @@ class DBManagement {
 	 * 
 	 * @param {string} strEmail 
 	 * @param {string} strPassword 
-	 * 
-	 * @returns {string}
+	 * @param {string} strUsername
 	 */
-	async createUserAccount(strEmail, strPassword)
+	async createUserAccount(strEmail, strPassword, strUsername)
 	{
 		await firebase.auth().createUserWithEmailAndPassword(strEmail, strPassword)
 			.then((value) => {
+				value.user.updateProfile({
+					displayName: strUsername
+				});
+
 				frontendClient.sendResponseToRegisterForm(value.user.email);
+
+				firebase.database().ref("users/" + strUsername).set({
+					username: strUsername
+				});
 			})
 			.catch((error) => {
-				console.error(error.code);
 				console.error(error.message);
 				frontendClient.sendResponseToRegisterForm(error.message);
 		});
@@ -56,8 +62,6 @@ class DBManagement {
 	 * 
 	 * @param {string} strEmail 
 	 * @param {string} strPassword 
-	 * 
-	 * @returns {string}
 	 */
 	async signIn(strEmail, strPassword)
 	{
@@ -66,48 +70,130 @@ class DBManagement {
 				frontendClient.sendResponseToLoginForm(value.user.email);
 			})
 			.catch((error) => {
-				console.error(error.code);
 				console.error(error.message);
 				frontendClient.sendResponseToLoginForm(error.message);
 		});
 	}
 
 
+	/**
+	 * Used to logout the user.
+	 */
 	async logoutUser()
 	{
 		await firebase.auth().signOut()
-			.then(() => {
-				frontendClient.currentUserChanged(false);
-			})
 			.catch((error) => {
-				console.error(error.code);
 				console.error(error.message);
 			})
 	}
 
 
-	getAllGames()
+	/**
+	 * Returns a list of all registered users;
+	 * 
+	 * @returns {string[]}
+	 */
+	async retrieveUsers()
 	{
+		const arrUsers = [];
+		await firebase.database().ref("users/").once("value").then((snapshot) => {
+			snapshot.forEach((item) => {
+				arrUsers.push(item.val().username);
+			})
+		});
 
+		return arrUsers;
 	}
 
 
-
-	getUserGames()
+	/**
+	 * Verifies if the user is logged in.
+	 * 
+	 * @returns {string}
+	 */
+	async checkLoginStatus()
 	{
+		const user = await firebase.auth().currentUser;
 
+		if(user)
+		{
+			return user.displayName;
+		}
+		else
+		{
+			return "";
+		}
 	}
 
 
-	updateUserGames()
+	/**
+	 * Adds a person to the friends list.
+	 * 
+	 * @param {string} strFriendUsername
+	 * 
+	 * @returns {string}
+	 */
+	async addFriend(strFriendUsername)
 	{
+		let bHadError = false;
+		let strErrorMessage = "";
+		const user = await firebase.auth().currentUser;
 
+		const strNewPostKey = firebase.database().ref("friends/").child(user.displayName).push().key;
+		await firebase.database().ref("friends/").child(user.displayName + "/" + strNewPostKey).update({ username: strFriendUsername }, (error) => {
+			if(error)
+			{
+				console.error(error);
+				bHadError = true;
+				strErrorMessage = error.message;
+			}
+		});
+
+		if(!bHadError)
+		{
+			return "Success";
+		}
+		else
+		{
+			return strErrorMessage;
+		}
 	}
 
 
-	deleteUserAccount()
+	/**
+	 * Removes a friend from the friends list.
+	 * 
+	 * @param {string} strFriendUsername 
+	 * 
+	 * @returns {string}
+	 */
+	async removeFriend(strFriendUsername)
 	{
+		let bHadError = false;
+		let strErrorMessage = "";
+		const user = await firebase.auth().currentUser;
 
+		await firebase.database().ref("friends/" + user.displayName).once("value").then((snapshot) => {
+			snapshot.forEach((item) => {
+				if(item.val().username === strFriendUsername)
+				{
+					firebase.database().ref("friends/" + user.displayName).child(item.key).remove()
+						.catch((error) => {
+							bHadError = true;
+							strErrorMessage = error.message;
+					});
+				}
+			})
+		});
+
+		if(!bHadError)
+		{
+			return "Success";
+		}
+		else
+		{
+			return strErrorMessage;
+		}
 	}
 }
 
