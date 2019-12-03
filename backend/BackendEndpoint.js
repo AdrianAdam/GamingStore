@@ -135,6 +135,19 @@ class BackendEndpoint {
 	{
 		return await DB.removeFriend(strFriendUsername);
 	}
+
+
+	/**
+	 * Checks if the current user is friend with strFriendUsername.
+	 * 
+	 * @param {string} strFriendUsername 
+	 * 
+	 * @returns {bool}
+	 */
+	async checkIfFriend(strFriendUsername)
+	{
+		return await DB.checkIfFriend(strFriendUsername);
+	}
 }
 
 module.exports = BackendEndpoint;

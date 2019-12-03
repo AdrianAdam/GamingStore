@@ -195,6 +195,31 @@ class DBManagement {
 			return strErrorMessage;
 		}
 	}
+
+
+	/**
+	 * Checks if the current user is friend with strFriendUsername.
+	 * 
+	 * @param {string} strFriendUsername 
+	 * 
+	 * @returns {bool}
+	 */
+	async checkIfFriend(strFriendUsername)
+	{
+		let bFound = false;
+		const user = await firebase.auth().currentUser;
+
+		await firebase.database().ref("friends/" + user.displayName).once("value").then((snapshot) => {
+			snapshot.forEach((item) => {
+				if(item.val().username === strFriendUsername)
+				{
+					bFound = true;
+				}
+			})
+		});
+
+		return bFound;
+	}
 }
 
 module.exports = DBManagement;

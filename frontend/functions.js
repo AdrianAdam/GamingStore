@@ -216,7 +216,7 @@ async function autocompleteCommunitySearch()
  */
 async function checkLoginStatus()
 {
-	setInterval(async () => {
+	setTimeout(async () => {
 		const strResponse = await backendClient.checkLoginStatus();
 
 		if(strResponse && strResponse !== "")
@@ -232,7 +232,7 @@ async function checkLoginStatus()
 			document.getElementById("accountButton").style.display = "none";
 			document.getElementById("logoutButton").style.display = "none";
 		}
-	}, 5 * 1000);
+	}, 1 * 1000);
 }
 
 
@@ -241,11 +241,35 @@ async function initializeFriendsFunctions()
 	const elInputSearchFriend = document.getElementById("searchFriend");
 	elInputSearchFriend.addEventListener(
 		"change",
-		() => { 
+		async () => { 
 			if(elInputSearchFriend.value)
 			{
 				document.getElementById("searchedFriendSpan").textContent = elInputSearchFriend.value;
 				document.getElementById("searchedFriend").style.display = "";
+
+				const elUsernameSpan = document.getElementById("userDisplayName");
+				if(elUsernameSpan)
+				{
+					if(elUsernameSpan.textContent === elInputSearchFriend.value)
+					{
+						document.getElementById("addSearchedFriend").disabled = true;
+						document.getElementById("removeSearchedFriend").disabled = true;
+					}
+					else
+					{
+						const bResponse = await backendClient.checkIfFriend(elInputSearchFriend.value);
+						if(bResponse)
+						{
+							document.getElementById("addSearchedFriend").disabled = true;
+							document.getElementById("removeSearchedFriend").disabled = false;
+						}
+						else
+						{
+							document.getElementById("addSearchedFriend").disabled = false;
+							document.getElementById("removeSearchedFriend").disabled = true;
+						}
+					}
+				}
 			}
 			else
 			{
@@ -257,6 +281,10 @@ async function initializeFriendsFunctions()
 		"click",
 		async () => {
 			const strResponse = await backendClient.addFriend(document.getElementById("searchedFriendSpan").textContent);
+
+			document.getElementById("addSearchedFriend").disabled = true;
+			document.getElementById("removeSearchedFriend").disabled = false;
+
 			alert(strResponse);
 		}
 	);
@@ -265,6 +293,10 @@ async function initializeFriendsFunctions()
 		"click",
 		async () => {
 			const strResponse = await backendClient.removeFriend(document.getElementById("searchedFriendSpan").textContent);
+
+			document.getElementById("addSearchedFriend").disabled = false;
+			document.getElementById("removeSearchedFriend").disabled = true;
+
 			alert(strResponse);
 		}
 	);
