@@ -220,6 +220,59 @@ class DBManagement {
 
 		return bFound;
 	}
+
+
+	/**
+	 * Create a new post for the current user.
+	 * 
+	 * @param {string} strPostText 
+	 */
+	async createNewPost(strPostText)
+	{
+		const user = await firebase.auth().currentUser;
+
+		if(user)
+		{
+			const objTime = new Date();
+			const strFullTime = objTime.getFullYear() + "-" + (objTime.getMonth() + 1) + "-" + objTime.getDate() + " "
+				+ objTime.getHours() + ":" + objTime.getMinutes() + ":" + objTime.getSeconds();
+	
+			const strNewPostKey = firebase.database().ref("posts/").child(user.displayName).push().key;
+			await firebase.database().ref("posts/").child(user.displayName + "/" + strNewPostKey).update({ username: user.displayName, post: strPostText, time: strFullTime }, (error) => {
+				if(error)
+				{
+					console.error(error);
+				}
+			});
+		}
+	}
+
+
+	/**
+	 * Watches the database for changes on posts.
+	 */
+	async watchCommunityPosts()
+	{
+		const user = await firebase.auth().currentUser;
+
+		if(user)
+		{
+			const watcherDB = await firebase.database().ref(`posts/${user.displayName}`);
+			watcherDB.on(
+				"value",
+				(snapshot) => {
+					const arrPosts = [];
+	
+					snapshot.forEach((item) => {
+						const arrPost = { username: item.val().username, post: item.val().post, time: item.val().time };
+						arrPosts.push(arrPost);
+					});
+	
+					frontendClient.updateCommunityPosts(arrPosts);
+				}
+			);
+		}
+	}
 }
 
 module.exports = DBManagement;

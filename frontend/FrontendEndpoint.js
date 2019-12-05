@@ -49,6 +49,17 @@ class FrontendEndpoint {
 			document.getElementById("registerStatusText").style.color = "red";
 		}
 	}
+
+
+	/**
+	 * Update the community page with new posts.
+	 * 
+	 * @param {string} arrPosts 
+	 */
+	async updateCommunityPosts(arrPosts)
+	{
+		displayCommunityPosts(arrPosts);
+	}
 }
 
 module.exports = FrontendEndpoint;

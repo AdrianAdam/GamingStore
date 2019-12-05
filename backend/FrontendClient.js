@@ -25,6 +25,17 @@ class FrontendClient {
 	{
 		frontendEndpoint.sendResponseToRegisterForm(strResponse);
 	}
+
+
+	/**
+	 * Update the community page with new posts.
+	 * 
+	 * @param {string} arrPosts 
+	 */
+	async updateCommunityPosts(arrPosts)
+	{
+		frontendEndpoint.updateCommunityPosts(arrPosts);
+	}
 }
 
 module.exports = FrontendClient;

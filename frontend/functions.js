@@ -301,3 +301,158 @@ async function initializeFriendsFunctions()
 		}
 	);
 }
+
+
+/**
+ * Displays all posts created by your friends.
+ * 
+ * @param {Array<Object<string, string>>} arrPosts
+ */
+async function displayCommunityPosts(arrPosts=undefined)
+{
+	const elCommunityPosts = document.getElementById("communityPosts");
+	elCommunityPosts.innerHTML = "";
+
+	const elCreatePostDiv = document.createElement("div");
+	const elPostTextArea = document.createElement("textarea");
+	const elPostSubmitDiv = document.createElement("div");
+
+	elCreatePostDiv.style.width = "30%";
+	elCreatePostDiv.style.marginRight = "20px";
+	elCreatePostDiv.style.cssFloat = "left";
+	elCreatePostDiv.style.height = "160px";
+	elPostTextArea.setAttribute("type", "text");
+	elPostTextArea.style.color = "black";
+	elPostTextArea.style.height = "130px";
+	elPostTextArea.style.width = "100%";
+	elPostTextArea.style.overflowY = "scroll";
+
+	const elSavePostButton = document.createElement("a");
+	const elSavePostSpan = document.createElement("span");
+	const elCancelButton = document.createElement("a");
+	const elCancelPostSpan = document.createElement("span");
+	elSavePostButton.classList = "btn btn-success btn-xs";
+	elSavePostSpan.classList = "glyphicon glyphicon-floppy-saved";
+	elCancelButton.classList = "btn btn-danger btn-xs";
+	elCancelButton.style.cssFloat = "right";
+	elCancelPostSpan.classList = "glyphicon glyphicon-floppy-remove";
+
+	elSavePostButton.addEventListener(
+		"click",
+		async () => {
+			await backendClient.createNewPost(elPostTextArea.value);
+			elPostTextArea.value = "";
+		}
+	);
+	elCancelButton.addEventListener(
+		"click",
+		async () => {
+			elPostTextArea.value = "";
+		}
+	);
+
+	elCancelButton.appendChild(elCancelPostSpan);
+	elCancelButton.appendChild(document.createTextNode(" Cancel"));
+	elSavePostButton.appendChild(elSavePostSpan);
+	elSavePostButton.appendChild(document.createTextNode(" Save"));
+	elPostSubmitDiv.appendChild(elSavePostButton);
+	elPostSubmitDiv.appendChild(elCancelButton);
+	elCreatePostDiv.appendChild(elPostTextArea);
+	elCreatePostDiv.appendChild(elPostSubmitDiv);
+
+	elCommunityPosts.appendChild(elCreatePostDiv);
+
+	if(typeof arrPosts !== "undefined")
+	{
+		let nPostIndex = 0;
+		for(let elPost of arrPosts)
+		{
+			const elPostDiv = document.createElement("div");
+			const elTextSpan= document.createElement("span");
+
+			if(nPostIndex >= 2)
+			{
+				elPostDiv.style.marginTop = "20px";
+			}
+			elPostDiv.style.width = "30%";
+			elPostDiv.style.cssFloat = "left";
+			elPostDiv.style.marginRight = "20px";
+			elPostDiv.style.height = "160px";
+			elPostDiv.style.backgroundColor = "grey";
+			elPostDiv.style.overflowY = "scroll";
+			elTextSpan.style.width = "100%";
+			elTextSpan.style.marginLeft = "5px";
+			elTextSpan.style.marginRight = "5px";
+
+			const elLink = elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm);
+			let nLinkIndex = 0;
+			if(elLink)
+			{
+				const arrSplitPost = elPost.post.split(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm)
+				for(let strPartialPost of arrSplitPost)
+				{
+					if(strPartialPost !== "")
+					{
+						const elAnchor = document.createElement("a");
+						if(typeof elLink[nLinkIndex] !== "undefined")
+						{
+							elAnchor.appendChild(document.createTextNode(elLink[nLinkIndex]));
+							elAnchor.classList = "btn";
+	
+							elTextSpan.appendChild(document.createTextNode(strPartialPost));
+							elTextSpan.appendChild(elAnchor);
+						}
+						else
+						{
+							elTextSpan.appendChild(document.createTextNode(strPartialPost));
+						}
+
+						nLinkIndex++;
+					}
+					else
+					{
+						if(strPartialPost === "" && typeof elLink[nLinkIndex] !== "undefined")
+						{
+							const elAnchor = document.createElement("a");
+							elAnchor.appendChild(document.createTextNode(elLink[nLinkIndex]));
+							elAnchor.classList = "btn";
+
+							elTextSpan.appendChild(elAnchor);
+
+							nLinkIndex++;
+						}
+					}
+				}
+			}
+			elPostDiv.appendChild(elTextSpan);
+
+			const elDetailDiv = document.createElement("div");
+			elDetailDiv.style.marginTop = "20px";
+			elDetailDiv.style.marginLeft = "5px";
+			elDetailDiv.style.marginRight = "5px";
+			const elNameSpan = document.createElement("span");
+			const elTimeSpan = document.createElement("span");
+			elTimeSpan.style.cssFloat = "right";
+
+			elNameSpan.appendChild(document.createTextNode(elPost.username));
+			elTimeSpan.appendChild(document.createTextNode(elPost.time));
+
+			elDetailDiv.appendChild(elNameSpan);
+			elDetailDiv.appendChild(elTimeSpan);
+
+			elPostDiv.appendChild(elDetailDiv);
+			elCommunityPosts.appendChild(elPostDiv);
+
+			nPostIndex++;
+		}
+	}
+}
+
+
+/**
+ * Starts the watcher for posts.
+ */
+async function setCommunityPostsWatcher()
+{
+	await backendClient.watchCommunityPosts();
+}

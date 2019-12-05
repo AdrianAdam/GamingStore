@@ -88,6 +88,12 @@ input {
 	width: 300px;
 }
 
+#communityPosts {
+	float: left;
+	margin-top: 40px;
+	width: 100%;
+}
+
 .footer {
 	bottom: 0;
 	color: white;

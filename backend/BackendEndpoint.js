@@ -148,6 +148,26 @@ class BackendEndpoint {
 	{
 		return await DB.checkIfFriend(strFriendUsername);
 	}
+
+
+	/**
+	 * Create a new post for the current user.
+	 * 
+	 * @param {string} strPostText 
+	 */
+	async createNewPost(strPostText)
+	{
+		return await DB.createNewPost(strPostText);
+	}
+
+
+	/**
+	 * Watches the database for changes on posts.
+	 */
+	async watchCommunityPosts()
+	{
+		return await DB.watchCommunityPosts();
+	}
 }
 
 module.exports = BackendEndpoint;
