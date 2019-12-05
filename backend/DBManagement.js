@@ -139,15 +139,18 @@ class DBManagement {
 		let strErrorMessage = "";
 		const user = await firebase.auth().currentUser;
 
-		const strNewPostKey = firebase.database().ref("friends/").child(user.displayName).push().key;
-		await firebase.database().ref("friends/").child(user.displayName + "/" + strNewPostKey).update({ username: strFriendUsername }, (error) => {
-			if(error)
-			{
-				console.error(error);
-				bHadError = true;
-				strErrorMessage = error.message;
-			}
-		});
+		if(user)
+		{
+			const strNewPostKey = firebase.database().ref("friends/").child(user.displayName).push().key;
+			await firebase.database().ref("friends/").child(user.displayName + "/" + strNewPostKey).update({ username: strFriendUsername }, (error) => {
+				if(error)
+				{
+					console.error(error);
+					bHadError = true;
+					strErrorMessage = error.message;
+				}
+			});
+		}
 
 		if(!bHadError)
 		{
@@ -173,18 +176,21 @@ class DBManagement {
 		let strErrorMessage = "";
 		const user = await firebase.auth().currentUser;
 
-		await firebase.database().ref("friends/" + user.displayName).once("value").then((snapshot) => {
-			snapshot.forEach((item) => {
-				if(item.val().username === strFriendUsername)
-				{
-					firebase.database().ref("friends/" + user.displayName).child(item.key).remove()
-						.catch((error) => {
-							bHadError = true;
-							strErrorMessage = error.message;
-					});
-				}
-			})
-		});
+		if(user)
+		{
+			await firebase.database().ref("friends/" + user.displayName).once("value").then((snapshot) => {
+				snapshot.forEach((item) => {
+					if(item.val().username === strFriendUsername)
+					{
+						firebase.database().ref("friends/" + user.displayName).child(item.key).remove()
+							.catch((error) => {
+								bHadError = true;
+								strErrorMessage = error.message;
+						});
+					}
+				})
+			});
+		}
 
 		if(!bHadError)
 		{
@@ -209,14 +215,17 @@ class DBManagement {
 		let bFound = false;
 		const user = await firebase.auth().currentUser;
 
-		await firebase.database().ref("friends/" + user.displayName).once("value").then((snapshot) => {
-			snapshot.forEach((item) => {
-				if(item.val().username === strFriendUsername)
-				{
-					bFound = true;
-				}
-			})
-		});
+		if(user)
+		{
+			await firebase.database().ref("friends/" + user.displayName).once("value").then((snapshot) => {
+				snapshot.forEach((item) => {
+					if(item.val().username === strFriendUsername)
+					{
+						bFound = true;
+					}
+				})
+			});
+		}
 
 		return bFound;
 	}
