@@ -94,12 +94,16 @@ input {
 	width: 100%;
 }
 
+#socialMedia {
+	text-align: center;
+}
+
 .footer {
+	background-color: dodgerblue;
 	bottom: 0;
 	color: white;
 	height: 35px;
 	left: 0;
-	margin-bottom: 10px;
 	position: fixed;
 	width: 100%;
 }

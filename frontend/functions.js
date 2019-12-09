@@ -6,6 +6,8 @@ const app = remote.app;
 const win = remote.getCurrentWindow();
 const BackendClient = require("./BackendClient");
 const backendClient = new BackendClient();
+let twitchPlayer;
+let youtubePlayer;
 
 window.remote = remote; 
 let secondWindow = null;
@@ -384,44 +386,62 @@ async function displayCommunityPosts(arrPosts=undefined)
 			elTextSpan.style.marginLeft = "5px";
 			elTextSpan.style.marginRight = "5px";
 
-			const elLink = elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm);
+			const arrLink = elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm);
 			let nLinkIndex = 0;
-			if(elLink)
+			if(arrLink)
 			{
 				const arrSplitPost = elPost.post.split(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm)
 				for(let strPartialPost of arrSplitPost)
 				{
-					if(strPartialPost !== "")
+					const strLink = arrLink[nLinkIndex]
+					const elAnchor = document.createElement("a");
+					elAnchor.appendChild(document.createTextNode(strLink));
+					elAnchor.classList = "btn";
+					elAnchor.addEventListener(
+						"click",
+						() => {
+							if(strLink.match(/\s{0,}[a-z]+:\/\/www\.twitch\.tv\/[A-Za-z0-9?=]+/gm))
+							{
+								const arrTwitchSplit = strLink.split("/");
+								const strChannelName = arrTwitchSplit[arrTwitchSplit.length - 1];
+								if(twitchPlayer)
+								{
+									twitchPlayer.setChannel(strChannelName);
+								}
+								else
+								{
+									twitchPlayer = new Twitch.Player("socialMedia", { width: 720, height: 480, channel: strChannelName });
+									twitchPlayer.setVolume(0.5);
+								}
+							}
+							else if(strLink.match(/\s{0,}[a-z]+:\/\/www\.youtube\.com\/[A-Za-z0-9?=]+/gm))
+							{
+								const arrYoutbeSplit = strLink.split("/");
+								const strVideoID = arrYoutbeSplit[arrYoutbeSplit.length - 1].split("=")[1];
+								if(youtubePlayer)
+								{
+									// youtubePlayer.loadVideoById(strVideoID, 0, "default");
+								}
+								else
+								{
+									youtubePlayer = new YT.Player("socialMedia", { width: 720, height: 480, videoId: strVideoID });
+								}
+							}
+						}
+					);
+
+					if(typeof arrLink[nLinkIndex] !== "undefined")
 					{
-						const elAnchor = document.createElement("a");
-						if(typeof elLink[nLinkIndex] !== "undefined")
-						{
-							elAnchor.appendChild(document.createTextNode(elLink[nLinkIndex]));
-							elAnchor.classList = "btn";
-	
-							elTextSpan.appendChild(document.createTextNode(strPartialPost));
-							elTextSpan.appendChild(elAnchor);
-						}
-						else
+						if(strPartialPost !== "")
 						{
 							elTextSpan.appendChild(document.createTextNode(strPartialPost));
 						}
 
-						nLinkIndex++;
+						elTextSpan.appendChild(elAnchor);
 					}
-					else
-					{
-						if(strPartialPost === "" && typeof elLink[nLinkIndex] !== "undefined")
-						{
-							const elAnchor = document.createElement("a");
-							elAnchor.appendChild(document.createTextNode(elLink[nLinkIndex]));
-							elAnchor.classList = "btn";
 
-							elTextSpan.appendChild(elAnchor);
 
-							nLinkIndex++;
-						}
-					}
+					nLinkIndex++;
 				}
 			}
 			else
