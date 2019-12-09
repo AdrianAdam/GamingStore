@@ -168,6 +168,17 @@ class BackendEndpoint {
 	{
 		return await DB.watchCommunityPosts();
 	}
+
+
+	/**
+	 * Deletes a post for the current user.
+	 * 
+	 * @param {string} strKey 
+	 */
+	async deletePost(strKey)
+	{
+		return await DB.deletePost(strKey);
+	}
 }
 
 module.exports = BackendEndpoint;

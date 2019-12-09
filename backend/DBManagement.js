@@ -273,13 +273,40 @@ class DBManagement {
 					const arrPosts = [];
 	
 					snapshot.forEach((item) => {
-						const arrPost = { username: item.val().username, post: item.val().post, time: item.val().time };
+						const arrPost = { username: item.val().username, post: item.val().post, time: item.val().time, key: item.key };
 						arrPosts.push(arrPost);
 					});
-	
+
+					arrPosts.sort((a, b) => {
+						a = new Date(a.time);
+						b = new Date(b.time);
+						return a > b ? -1 : 0;
+					});
+
 					frontendClient.updateCommunityPosts(arrPosts);
 				}
 			);
+		}
+	}
+
+
+	/**
+	 * Deletes a post for the current user.
+	 * 
+	 * @param {string} strKey 
+	 */
+	async deletePost(strKey)
+	{
+		const user = await firebase.auth().currentUser;
+
+		if(user)
+		{
+			await firebase.database().ref(`posts/${user.displayName}/${strKey}`).remove((error) => {
+				if(error)
+				{
+					console.error(error);
+				}
+			});
 		}
 	}
 }

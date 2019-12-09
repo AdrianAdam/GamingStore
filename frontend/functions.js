@@ -424,6 +424,10 @@ async function displayCommunityPosts(arrPosts=undefined)
 					}
 				}
 			}
+			else
+			{
+				elTextSpan.appendChild(document.createTextNode(elPost.post));
+			}
 			elPostDiv.appendChild(elTextSpan);
 
 			const elDetailDiv = document.createElement("div");
@@ -441,6 +445,29 @@ async function displayCommunityPosts(arrPosts=undefined)
 			elDetailDiv.appendChild(elTimeSpan);
 
 			elPostDiv.appendChild(elDetailDiv);
+
+			if(document.getElementById("userDisplayName") && elPost.username === document.getElementById("userDisplayName").textContent)
+			{
+				const elDeleteButton = document.createElement("a");
+				elDeleteButton.style.marginTop = "10px";
+				elDeleteButton.style.cssFloat = "right";
+				elDeleteButton.style.marginRight = "5px";
+				elDeleteButton.classList = "btn btn-danger btn-xs";
+				const elDeleteSpan = document.createElement("span");
+				elDeleteSpan.classList = "glyphicon glyphicon-trash";
+				elDeleteButton.appendChild(elDeleteSpan);
+				elDeleteButton.appendChild(document.createTextNode(" Delete post"));
+
+				elDeleteButton.addEventListener(
+					"click",
+					async () => {
+						await backendClient.deletePost(elPost.key);
+					}
+				);
+
+				elPostDiv.appendChild(elDeleteButton);
+			}
+
 			elCommunityPosts.appendChild(elPostDiv);
 
 			nPostIndex++;
