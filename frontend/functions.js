@@ -1,6 +1,7 @@
 "use strict";
 
 const { remote } = require("electron");
+const YTPlayer = require("yt-player");
 const BrowserWindow = remote.BrowserWindow;
 const app = remote.app;
 const win = remote.getCurrentWindow();
@@ -410,7 +411,7 @@ async function displayCommunityPosts(arrPosts=undefined)
 								}
 								else
 								{
-									twitchPlayer = new Twitch.Player("socialMedia", { width: 720, height: 480, channel: strChannelName });
+									twitchPlayer = new Twitch.Player("socialMediaTwitch", { width: 720, height: 480, channel: strChannelName });
 									twitchPlayer.setVolume(0.5);
 								}
 							}
@@ -420,11 +421,13 @@ async function displayCommunityPosts(arrPosts=undefined)
 								const strVideoID = arrYoutbeSplit[arrYoutbeSplit.length - 1].split("=")[1];
 								if(youtubePlayer)
 								{
-									// youtubePlayer.loadVideoById(strVideoID, 0, "default");
+									youtubePlayer.load(strVideoID, /* bAutoplay */ true);
 								}
 								else
 								{
-									youtubePlayer = new YT.Player("socialMedia", { width: 720, height: 480, videoId: strVideoID });
+									youtubePlayer = new YTPlayer("#socialMediaYoutube", { width: 720, height: 480 });
+									youtubePlayer.load(strVideoID, /* bAutoplay */ true);
+									youtubePlayer.setVolume(50);
 								}
 							}
 						}

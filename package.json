@@ -13,6 +13,7 @@
     "jsdoc": "^3.6.3"
   },
   "dependencies": {
-    "firebase": "^7.2.2"
+    "firebase": "^7.2.2",
+    "yt-player": "^3.4.3"
   }
 }

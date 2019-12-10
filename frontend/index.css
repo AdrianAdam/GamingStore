@@ -94,8 +94,11 @@ input {
 	width: 100%;
 }
 
-#socialMedia {
+.socialMedia {
+	float: left;
+	margin-top: 20px;
 	text-align: center;
+	width: 48%;
 }
 
 .footer {
