@@ -1,6 +1,10 @@
 body {
-	background-color: black;
+	background-color: mediumblue;
 	color: white;
+}
+
+header {
+	background-color: black;
 }
 
 #topInfo #navBar #head {
@@ -102,10 +106,10 @@ input {
 }
 
 .footer {
-	background-color: dodgerblue;
+	background-color: black;
 	bottom: 0;
 	color: white;
-	height: 35px;
+	height: 50px;
 	left: 0;
 	position: fixed;
 	width: 100%;
@@ -113,6 +117,7 @@ input {
 
 .footerLeft {
 	float: left;
+	margin-top: 15px;
 	text-align: left;
 	width: 50%;
 }
@@ -129,6 +134,7 @@ input {
 .footerRight {
 	color: white;
 	float: right;
+	margin-top: 15px;
 	text-align: right;
 	width:50%;
 }

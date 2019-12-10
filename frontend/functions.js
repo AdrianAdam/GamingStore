@@ -324,6 +324,7 @@ async function displayCommunityPosts(arrPosts=undefined)
 	elCreatePostDiv.style.marginRight = "20px";
 	elCreatePostDiv.style.cssFloat = "left";
 	elCreatePostDiv.style.height = "160px";
+	elCreatePostDiv.style.backgroundColor = "black";
 	elPostTextArea.setAttribute("type", "text");
 	elPostTextArea.style.color = "black";
 	elPostTextArea.style.height = "130px";
@@ -336,9 +337,11 @@ async function displayCommunityPosts(arrPosts=undefined)
 	const elCancelPostSpan = document.createElement("span");
 	elSavePostButton.classList = "btn btn-success btn-xs";
 	elSavePostSpan.classList = "glyphicon glyphicon-floppy-saved";
+	elSavePostButton.style.marginLeft = "5px";
 	elCancelButton.classList = "btn btn-danger btn-xs";
 	elCancelButton.style.cssFloat = "right";
 	elCancelPostSpan.classList = "glyphicon glyphicon-floppy-remove";
+	elCancelButton.style.marginRight = "5px";
 
 	elSavePostButton.addEventListener(
 		"click",
@@ -382,7 +385,11 @@ async function displayCommunityPosts(arrPosts=undefined)
 			elPostDiv.style.marginRight = "20px";
 			elPostDiv.style.height = "160px";
 			elPostDiv.style.backgroundColor = "grey";
-			elPostDiv.style.overflowY = "scroll";
+			if(elPost.post.length > 230)
+			{
+				elPostDiv.style.overflowY = "scroll";
+			}
+			elPostDiv.style.backgroundColor = "black";
 			elTextSpan.style.width = "100%";
 			elTextSpan.style.marginLeft = "5px";
 			elTextSpan.style.marginRight = "5px";
@@ -441,6 +448,10 @@ async function displayCommunityPosts(arrPosts=undefined)
 						}
 
 						elTextSpan.appendChild(elAnchor);
+					}
+					else
+					{
+						elTextSpan.appendChild(document.createTextNode(strPartialPost));
 					}
 
 
