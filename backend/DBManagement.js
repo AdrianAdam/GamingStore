@@ -265,16 +265,28 @@ class DBManagement {
 		const user = await firebase.auth().currentUser;
 
 		if(user)
-		{
-			const watcherDB = await firebase.database().ref(`posts/${user.displayName}`);
+		{ 
+			const arrFriendsList = [];
+			await firebase.database().ref(`friends/${user.displayName}`).once("value").then((snapshot) => {
+				snapshot.forEach((item) => {
+					arrFriendsList.push(item.val().username);
+				})
+			});
+
+			const watcherDB = await firebase.database().ref(`posts/`);
 			watcherDB.on(
 				"value",
 				(snapshot) => {
 					const arrPosts = [];
 	
-					snapshot.forEach((item) => {
-						const arrPost = { username: item.val().username, post: item.val().post, time: item.val().time, key: item.key };
-						arrPosts.push(arrPost);
+					snapshot.forEach((itemUser) => {
+						if(arrFriendsList.includes(itemUser.key) || itemUser.key === user.displayName)
+						{
+							itemUser.forEach((item) => {
+								const arrPost = { username: item.val().username, post: item.val().post, time: item.val().time, key: item.key };
+								arrPosts.push(arrPost);
+							});
+						}
 					});
 
 					arrPosts.sort((a, b) => {
