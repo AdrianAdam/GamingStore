@@ -194,13 +194,14 @@ class BackendEndpoint {
 		// This file can be updated after a given amount of time (for example, 24 hours), but we will leave it as it is.
 		if(fs.existsSync("ownedGames.json"))
 		{
-			return fs.readFileSync("ownedGames.json", "utf-8");
+			const data = fs.readFileSync("ownedGames.json", "utf-8")
+			return JSON.parse(data);
 		}
 		else
 		{
 			const response = await fetch(`http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${fs.readFileSync("privateSteamAPIKey.json", "utf-8").replace(/\s/g,"")}&include_appinfo=true&steamid=${fs.readFileSync("privateSteamUserID.json", "utf-8").replace(/\s/g,"")}&format=json`);
 			const json = await response.json();
-			fs.writeFileSync("ownedGames.json", json, "utf-8");
+			fs.writeFileSync("ownedGames.json", JSON.stringify(json), "utf-8");
 			return json;
 		}
 	}
@@ -223,7 +224,8 @@ class BackendEndpoint {
 		// function finishes. Also, after 200 requests in less than 5 minutes, you are temporarily banned from making requests for 5 minutes.
 		if(fs.existsSync("ownedGamesDetails.json"))
 		{
-			return fs.readFileSync("ownedGamesDetails.json", "utf-8");
+			const data = fs.readFileSync("ownedGamesDetails.json", "utf-8")
+			return JSON.parse(data);
 		}
 		else
 		{
@@ -235,7 +237,7 @@ class BackendEndpoint {
 				objAppIDToGameDetail[nAppID] = json[nAppID].data;
 			}
 
-			fs.writeFileSync("ownedGamesDetails.json", objAppIDToGameDetail, "utf-8");
+			fs.writeFileSync("ownedGamesDetails.json", JSON.stringify(objAppIDToGameDetail), "utf-8");
 
 			return objAppIDToGameDetail;
 		}
