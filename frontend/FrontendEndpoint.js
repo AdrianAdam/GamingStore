@@ -10,7 +10,7 @@ class FrontendEndpoint {
 	/**
 	 * @param {string} strResponse 
 	 */
-	sendResponseToLoginForm(strResponse)
+	async sendResponseToLoginForm(strResponse)
 	{
 		if(strResponse === document.getElementById("loginEmail").value)
 		{
@@ -32,7 +32,7 @@ class FrontendEndpoint {
 	/**
 	 * @param {string} strResponse 
 	 */
-	sendResponseToRegisterForm(strResponse)
+	async sendResponseToRegisterForm(strResponse)
 	{
 		if(strResponse === document.getElementById("registerEmail").value)
 		{
@@ -48,6 +48,17 @@ class FrontendEndpoint {
 			document.getElementById("registerStatusText").innerHTML = strResponse;
 			document.getElementById("registerStatusText").style.color = "red";
 		}
+	}
+
+
+	/**
+	 * Update the community page with new posts.
+	 * 
+	 * @param {string} arrPosts 
+	 */
+	async updateCommunityPosts(arrPosts)
+	{
+		displayCommunityPosts(arrPosts);
 	}
 }
 

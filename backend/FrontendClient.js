@@ -12,7 +12,7 @@ class FrontendClient {
 	/**
 	 * @param {string} strResponse 
 	 */
-	sendResponseToLoginForm(strResponse)
+	async sendResponseToLoginForm(strResponse)
 	{
 		frontendEndpoint.sendResponseToLoginForm(strResponse);
 	}
@@ -21,9 +21,20 @@ class FrontendClient {
 	/**
 	 * @param {string} strResponse 
 	 */
-	sendResponseToRegisterForm(strResponse)
+	async sendResponseToRegisterForm(strResponse)
 	{
 		frontendEndpoint.sendResponseToRegisterForm(strResponse);
+	}
+
+
+	/**
+	 * Update the community page with new posts.
+	 * 
+	 * @param {string} arrPosts 
+	 */
+	async updateCommunityPosts(arrPosts)
+	{
+		frontendEndpoint.updateCommunityPosts(arrPosts);
 	}
 }
 
