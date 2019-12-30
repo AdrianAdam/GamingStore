@@ -106,80 +106,122 @@ async function logout()
 async function generateLibraryPage()
 {
 	const objInstalledGames = await backendClient.getInstalledGames();
+	const objSteamOwnedGames = await backendClient.getSteamOwnedGames();
+	const objGamesDetails = await backendClient.getGamesDetails(objSteamOwnedGames);
 
 	const elGamesDiv = document.getElementById("gamesList");
+	elGamesDiv.style.marginTop = "10px";
+	elGamesDiv.style.height = "800px";
+	elGamesDiv.style.width = "210px";
+	elGamesDiv.style.overflowY = "scroll";
 	const elGameDetailsDiv = document.getElementById("gameDetails");
 
 	let bFirstGame = true;
 
-	for(let strKey in objInstalledGames)
+	for(let i = 0; i < objSteamOwnedGames.response.games.length; i++)
 	{
 		// Creates list of games
 		const elAnchorListGames = document.createElement("a");
-		elAnchorListGames.classList = "btn btn-primary";
+		if(objInstalledGames[objSteamOwnedGames.response.games[i].name])
+		{
+			elAnchorListGames.classList = "btn btn-success";
+		}
+		else
+		{
+			elAnchorListGames.classList = "btn btn-primary";
+		}
 		elAnchorListGames.style.width = "100%";
 		elAnchorListGames.style.textAlign = "left";
+		elAnchorListGames.style.marginBottom = "10px";
 		elAnchorListGames.addEventListener(
 			"click",
 			(() => {
 				const arrGamesDetails = document.getElementsByClassName("game");
 
-				for(let i = 0; i < arrGamesDetails.length; i++)
+				for(let j = 0; j < arrGamesDetails.length; j++)
 				{
-					if(arrGamesDetails[i].id === strKey)
+					if(arrGamesDetails[j].id === objSteamOwnedGames.response.games[i].name)
 					{
-						arrGamesDetails[i].style.display = "?";
+						arrGamesDetails[j].style.display = "";
 					}
 					else
 					{
-						arrGamesDetails[i].style.display = "none";
+						arrGamesDetails[j].style.display = "none";
 					}
 				}
 			})
 		);
 
 		const elSpan = document.createElement("span");
-		elSpan.innerHTML = strKey;
-
-		const elDivListGames = document.createElement("div");
+		elSpan.innerHTML = objSteamOwnedGames.response.games[i].name;
 
 		elAnchorListGames.appendChild(elSpan);
-		elDivListGames.appendChild(elAnchorListGames);
-		elGamesDiv.appendChild(elDivListGames);
+		elGamesDiv.appendChild(elAnchorListGames);
 		elGamesDiv.appendChild(document.createElement("br"));
 
 		// Creates game details page
 		const elTitle = document.createElement("h3");
-		elTitle.innerHTML = strKey;
+		elTitle.innerHTML = objSteamOwnedGames.response.games[i].name;
 
 		const elDivGameDetails = document.createElement("div");
 		elDivGameDetails.classList = "game";
-		elDivGameDetails.id = strKey;
+		elDivGameDetails.id = objSteamOwnedGames.response.games[i].name;
 
-		if(!bFirstGame)
+		if(bFirstGame)
+		{
+			bFirstGame = false;
+		}
+		else
 		{
 			elDivGameDetails.style.display = "none";
 		}
 
 		const elAnchorGameDetails = document.createElement("a");
-		elAnchorGameDetails.innerHTML = "Launch game";
-		elAnchorGameDetails.classList = "btn btn-primary";
-		elAnchorGameDetails.addEventListener(
-			"click",
-			(async() => {
-				await launchGame(objInstalledGames[strKey]);
-			})
-		)
-
-		const elParagraph = document.createElement("p");
-		elParagraph.innerHTML = "here will be game details";
+		if(objInstalledGames[objSteamOwnedGames.response.games[i].name])
+		{
+			elAnchorGameDetails.innerHTML = "Launch game";
+			elAnchorGameDetails.classList = "btn btn-success";
+			elAnchorGameDetails.addEventListener(
+				"click",
+				(async() => {
+					await launchGame(objInstalledGames[objSteamOwnedGames.response.games[i].name]);
+				})
+			);
+		}
+		else
+		{
+			elAnchorGameDetails.innerHTML = "Install game";
+			elAnchorGameDetails.classList = "btn btn-primary";
+		}
 
 		elDivGameDetails.appendChild(elTitle);
 		elDivGameDetails.appendChild(document.createElement("br"));
 		elDivGameDetails.appendChild(elAnchorGameDetails);
+
+		const nAppID = objSteamOwnedGames.response.games[i].appid;
+		const elDescriptionSpan = document.createElement("span");
+		elDescriptionSpan.innerHTML = objGamesDetails[nAppID].detailed_description;
+		const elDevelopersSpan = document.createElement("span");
+		elDevelopersSpan.appendChild(document.createTextNode("Publisher: " + objGamesDetails[nAppID].publishers.toString()));
+		const elPriceSpan = document.createElement("span");
+		elPriceSpan.appendChild(document.createTextNode("Price: " + objGamesDetails[nAppID].price_overview.final_formatted));
+		const elPCRequirements = document.createElement("span");
+		elPCRequirements.innerHTML = "PC requirements: " + objGamesDetails[nAppID].pc_requirements.minimum;
+
 		elDivGameDetails.appendChild(document.createElement("br"));
 		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elParagraph);
+		elDivGameDetails.appendChild(elDescriptionSpan);
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(elDevelopersSpan);
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(elPriceSpan);
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(elPCRequirements);
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(document.createElement("br"));
 
 		elGameDetailsDiv.appendChild(elDivGameDetails);
 	}

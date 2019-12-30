@@ -2,6 +2,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const fetch = require("node-fetch");
 const child_process = require("child_process");
 const DBManagement = require("./DBManagement");
 const DB = new DBManagement();
@@ -67,7 +68,7 @@ class BackendEndpoint {
 
 			for(let j = 0; j < arrDirContents.length; j++)
 			{
-				if(arrDirContents[j].endsWith(".bin.x86_64"))
+				if(arrDirContents[j].endsWith(".bin.x86_64") || arrDirContents[j].endsWith(".x86_64"))
 				{
 					objPathsOfGames[arrDirectories[i]] = path.normalize(currentPath + "/" + arrDirContents[j]);
 				}
@@ -85,7 +86,8 @@ class BackendEndpoint {
 	 */
 	async launchGame(strPath)
 	{
-		child_process.exec(strPath);
+		// child_process.exec doesn't work for paths with spaces in them. Spawn is a safer alternative that accepts spaces in paths.
+		child_process.spawn(`${strPath}`);
 	}
 
 
@@ -178,6 +180,65 @@ class BackendEndpoint {
 	async deletePost(strKey)
 	{
 		return await DB.deletePost(strKey);
+	}
+
+
+	/**
+	 * Get all owned games from Steam.
+	 * 
+	 * @returns {Array}
+	 */
+	async getSteamOwnedGames()
+	{
+		// Steam blocks access to API after multiple requests in a given time. As a workaround, we will store the data in a json file.
+		// This file can be updated after a given amount of time (for example, 24 hours), but we will leave it as it is.
+		if(fs.existsSync("ownedGames.json"))
+		{
+			return fs.readFileSync("ownedGames.json", "utf-8");
+		}
+		else
+		{
+			const response = await fetch(`http://api.steampowered.com/IPlayerService/GetOwnedGames/v0001/?key=${fs.readFileSync("privateSteamAPIKey.json", "utf-8").replace(/\s/g,"")}&include_appinfo=true&steamid=${fs.readFileSync("privateSteamUserID.json", "utf-8").replace(/\s/g,"")}&format=json`);
+			const json = await response.json();
+			fs.writeFileSync("ownedGames.json", json, "utf-8");
+			return json;
+		}
+	}
+
+
+	/**
+	 * Get details for owned games.
+	 * 
+	 * @param {object} objSteamOwnedGames 
+	 * 
+	 * @returns {object} nAppID => objGameDetail
+	 */
+	async getGamesDetails(objSteamOwnedGames)
+	{
+		const objAppIDToGameDetail = {};
+
+		// Steam blocks access to API after multiple requests in a given time. As a workaround, we will store the data in a json file.
+		// Calling Steam store API for each game can take a lot of time. Even for 200+ games it will take several minutes. In case this 
+		// file needs to be updated, only update certain games. DON'T update everything because the Library page won't load until this 
+		// function finishes. Also, after 200 requests in less than 5 minutes, you are temporarily banned from making requests for 5 minutes.
+		if(fs.existsSync("ownedGamesDetails.json"))
+		{
+			return fs.readFileSync("ownedGamesDetails.json", "utf-8");
+		}
+		else
+		{
+			for(let i = 0; i < objSteamOwnedGames.response.games.length; i++)
+			{
+				let nAppID = objSteamOwnedGames.response.games[i].appid;
+				const response = await fetch(`https://store.steampowered.com/api/appdetails?appids=${nAppID}`);
+				const json = await response.json();
+				objAppIDToGameDetail[nAppID] = json[nAppID].data;
+			}
+
+			fs.writeFileSync("ownedGamesDetails.json", objAppIDToGameDetail, "utf-8");
+
+			return objAppIDToGameDetail;
+		}
 	}
 }
 

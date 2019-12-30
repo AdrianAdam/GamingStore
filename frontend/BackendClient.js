@@ -151,6 +151,30 @@ class BackendClient {
 	{
 		return await backendEndpoint.deletePost(strKey);
 	}
+
+
+	/**
+	 * Get all owned games from Steam.
+	 * 
+	 * @returns {Array}
+	 */
+	async getSteamOwnedGames()
+	{
+		return await backendEndpoint.getSteamOwnedGames();
+	}
+
+
+	/**
+	 * Get details for owned games.
+	 * 
+	 * @param {object} objSteamOwnedGames 
+	 * 
+	 * @returns {object} nAppID => strGameDetail
+	 */
+	async getGamesDetails(objSteamOwnedGames)
+	{
+		return await backendEndpoint.getGamesDetails(objSteamOwnedGames);
+	}
 }
 
 module.exports = BackendClient;
