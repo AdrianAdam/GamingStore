@@ -1,3 +1,6 @@
 node_modules
 package-lock.json
 privateInfo.json
+privateSteamAPIKey.json
+privateSteamUserID.json
+ownedGames.json
