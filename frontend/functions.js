@@ -404,6 +404,7 @@ async function displayCommunityPosts(arrPosts=undefined)
 {
 	const elCommunityPosts = document.getElementById("communityPosts");
 	elCommunityPosts.innerHTML = "";
+	elCommunityPosts.style.marginBottom = "70px";
 
 	const elCreatePostDiv = document.createElement("div");
 	const elPostTextArea = document.createElement("textarea");
@@ -483,47 +484,72 @@ async function displayCommunityPosts(arrPosts=undefined)
 			elTextSpan.style.marginLeft = "5px";
 			elTextSpan.style.marginRight = "5px";
 
-			const arrLink = elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm);
+			const arrLink = elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+(\/[0-9]+)?/gm);
 			let nLinkIndex = 0;
 			if(arrLink)
 			{
-				const arrSplitPost = elPost.post.split(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm)
+				let arrSplitPost;
+				if(elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+\/[0-9]+/gm))
+				{
+					arrSplitPost = elPost.post.split(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+\/[0-9]+/gm);
+				}
+				else
+				{
+					arrSplitPost = elPost.post.split(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm);
+				}
 				for(let strPartialPost of arrSplitPost)
 				{
-					const strLink = arrLink[nLinkIndex]
+					const strLink = arrLink[nLinkIndex];
 					const elAnchor = document.createElement("a");
 					elAnchor.appendChild(document.createTextNode(strLink));
 					elAnchor.classList = "btn";
 					elAnchor.addEventListener(
 						"click",
 						() => {
-							if(strLink.match(/\s{0,}[a-z]+:\/\/www\.twitch\.tv\/[A-Za-z0-9?=]+/gm))
+							if(strLink.match(/\s{0,}[a-z]+:\/\/www\.twitch\.tv\/[A-Za-z0-9?=]+\/[0-9]+/gm))
 							{
 								const arrTwitchSplit = strLink.split("/");
-								const strChannelName = arrTwitchSplit[arrTwitchSplit.length - 1];
+								const strTwitchVideoID = arrTwitchSplit[arrTwitchSplit.length - 1];
 								if(twitchPlayer)
 								{
-									twitchPlayer.setChannel(strChannelName);
+									twitchPlayer.setVideo(strTwitchVideoID);
 								}
 								else
 								{
-									twitchPlayer = new Twitch.Player("socialMediaTwitch", { width: 720, height: 480, channel: strChannelName });
+									twitchPlayer = new Twitch.Player("socialMediaTwitch", { width: 720, height: 480, video: strTwitchVideoID });
 									twitchPlayer.setVolume(0.5);
 								}
 							}
-							else if(strLink.match(/\s{0,}[a-z]+:\/\/www\.youtube\.com\/[A-Za-z0-9?=]+/gm))
+							else 
 							{
-								const arrYoutbeSplit = strLink.split("/");
-								const strVideoID = arrYoutbeSplit[arrYoutbeSplit.length - 1].split("=")[1];
-								if(youtubePlayer)
+								if(strLink.match(/\s{0,}[a-z]+:\/\/www\.twitch\.tv\/[A-Za-z0-9?=]+/gm))
 								{
-									youtubePlayer.load(strVideoID, /* bAutoplay */ true);
+									const arrTwitchSplit = strLink.split("/");
+									const strChannelName = arrTwitchSplit[arrTwitchSplit.length - 1];
+									if(twitchPlayer)
+									{
+										twitchPlayer.setChannel(strChannelName);
+									}
+									else
+									{
+										twitchPlayer = new Twitch.Player("socialMediaTwitch", { width: 720, height: 480, channel: strChannelName });
+										twitchPlayer.setVolume(0.5);
+									}
 								}
-								else
+								else if(strLink.match(/\s{0,}[a-z]+:\/\/www\.youtube\.com\/[A-Za-z0-9?=]+/gm))
 								{
-									youtubePlayer = new YTPlayer("#socialMediaYoutube", { width: 720, height: 480 });
-									youtubePlayer.load(strVideoID, /* bAutoplay */ true);
-									youtubePlayer.setVolume(50);
+									const arrYoutbeSplit = strLink.split("/");
+									const strYoutubeVideoID = arrYoutbeSplit[arrYoutbeSplit.length - 1].split("=")[1];
+									if(youtubePlayer)
+									{
+										youtubePlayer.load(strYoutubeVideoID, /* bAutoplay */ true);
+									}
+									else
+									{
+										youtubePlayer = new YTPlayer("#socialMediaYoutube", { width: 720, height: 480 });
+										youtubePlayer.load(strYoutubeVideoID, /* bAutoplay */ true);
+										youtubePlayer.setVolume(50);
+									}
 								}
 							}
 						}
