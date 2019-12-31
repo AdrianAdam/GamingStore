@@ -203,35 +203,71 @@ async function generateLibraryPage()
 		elDivGameDetails.appendChild(document.createElement("br"));
 		elDivGameDetails.appendChild(elAnchorGameDetails);
 		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(document.createElement("br"));
 
 		const nAppID = objSteamOwnedGames.response.games[i].appid;
 		if(objGamesDetails[nAppID])
 		{
+			const elImgGame = document.createElement("img");
+			elImgGame.src = objGamesDetails[nAppID].header_image;
+			elImgGame.style.width = "800px";
+			elImgGame.style.height = "400px";
+			elImgGame.style.marginLeft = "auto";
+			elImgGame.style.marginRight = "auto";
+			elImgGame.style.display = "block";
+			elDivGameDetails.appendChild(elImgGame);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+
 			const elDescriptionSpan = document.createElement("span");
 			elDescriptionSpan.innerHTML = objGamesDetails[nAppID].detailed_description;
-			elDivGameDetails.appendChild(document.createElement("br"));
 			elDivGameDetails.appendChild(elDescriptionSpan);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
 
-			const elDevelopersSpan = document.createElement("span");
+			const elCategoriesSpan = document.createElement("span");
+			const arrCategories = [];
+			for(let j = 0; j < objGamesDetails[nAppID].categories.length; j++)
+			{
+				arrCategories.push(objGamesDetails[nAppID].categories[j].description);
+			}
+			elCategoriesSpan.appendChild(document.createTextNode("Categories: " + arrCategories.join(", ")));
+			elDivGameDetails.appendChild(elCategoriesSpan);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+
+			const elDevelopersSpan = document.createElement("span"); 
 			elDevelopersSpan.appendChild(document.createTextNode("Publisher: " + objGamesDetails[nAppID].publishers.toString()));
-			elDivGameDetails.appendChild(document.createElement("br"));
-			elDivGameDetails.appendChild(document.createElement("br"));
 			elDivGameDetails.appendChild(elDevelopersSpan);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+
+			const elReleaseDateSpan = document.createElement("span");
+			elReleaseDateSpan.appendChild(document.createTextNode("Release date: " + objGamesDetails[nAppID].release_date.date));
+			elDivGameDetails.appendChild(elReleaseDateSpan);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
 
 			if(objGamesDetails[nAppID].price_overview)
 			{
 				const elPriceSpan = document.createElement("span");
 				elPriceSpan.appendChild(document.createTextNode("Price: " + objGamesDetails[nAppID].price_overview.final_formatted));
-				elDivGameDetails.appendChild(document.createElement("br"));
-				elDivGameDetails.appendChild(document.createElement("br"));
 				elDivGameDetails.appendChild(elPriceSpan);
+				elDivGameDetails.appendChild(document.createElement("br"));
+				elDivGameDetails.appendChild(document.createElement("br"));
 			}
+
+			const elSupportedLanguages = document.createElement("span");
+			elSupportedLanguages.innerHTML = "Languages: " + objGamesDetails[nAppID].supported_languages;
+			elDivGameDetails.appendChild(elSupportedLanguages);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
 
 			const elPCRequirements = document.createElement("span");
 			elPCRequirements.innerHTML = "PC requirements: " + objGamesDetails[nAppID].pc_requirements.minimum;
-			elDivGameDetails.appendChild(document.createElement("br"));
-			elDivGameDetails.appendChild(document.createElement("br"));
 			elDivGameDetails.appendChild(elPCRequirements);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
 		}
 
 		elGameDetailsDiv.appendChild(elDivGameDetails);
