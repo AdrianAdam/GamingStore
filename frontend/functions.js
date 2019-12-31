@@ -114,7 +114,6 @@ async function generateLibraryPage()
 	elGamesDiv.style.height = "800px";
 	elGamesDiv.style.width = "210px";
 	elGamesDiv.style.overflowY = "scroll";
-	const elGameDetailsDiv = document.getElementById("gameDetails");
 
 	let bFirstGame = true;
 
@@ -130,9 +129,10 @@ async function generateLibraryPage()
 		{
 			elAnchorListGames.classList = "btn btn-primary";
 		}
-		elAnchorListGames.style.width = "100%";
 		elAnchorListGames.style.textAlign = "left";
 		elAnchorListGames.style.marginBottom = "10px";
+		elAnchorListGames.style.width = "90%";
+		elAnchorListGames.style.overflow = "hidden";
 		elAnchorListGames.addEventListener(
 			"click",
 			(() => {
@@ -160,6 +160,11 @@ async function generateLibraryPage()
 		elGamesDiv.appendChild(document.createElement("br"));
 
 		// Creates game details page
+		const elGameDetailsDiv = document.getElementById("gameDetails");
+		elGameDetailsDiv.style.height = "800px";
+		elGameDetailsDiv.style.marginTop = "10px";
+		elGameDetailsDiv.style.overflowY = "auto";
+
 		const elTitle = document.createElement("h3");
 		elTitle.innerHTML = objSteamOwnedGames.response.games[i].name;
 
@@ -197,31 +202,37 @@ async function generateLibraryPage()
 		elDivGameDetails.appendChild(elTitle);
 		elDivGameDetails.appendChild(document.createElement("br"));
 		elDivGameDetails.appendChild(elAnchorGameDetails);
+		elDivGameDetails.appendChild(document.createElement("br"));
 
 		const nAppID = objSteamOwnedGames.response.games[i].appid;
-		const elDescriptionSpan = document.createElement("span");
-		elDescriptionSpan.innerHTML = objGamesDetails[nAppID].detailed_description;
-		const elDevelopersSpan = document.createElement("span");
-		elDevelopersSpan.appendChild(document.createTextNode("Publisher: " + objGamesDetails[nAppID].publishers.toString()));
-		const elPriceSpan = document.createElement("span");
-		elPriceSpan.appendChild(document.createTextNode("Price: " + objGamesDetails[nAppID].price_overview.final_formatted));
-		const elPCRequirements = document.createElement("span");
-		elPCRequirements.innerHTML = "PC requirements: " + objGamesDetails[nAppID].pc_requirements.minimum;
+		if(objGamesDetails[nAppID])
+		{
+			const elDescriptionSpan = document.createElement("span");
+			elDescriptionSpan.innerHTML = objGamesDetails[nAppID].detailed_description;
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(elDescriptionSpan);
 
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elDescriptionSpan);
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elDevelopersSpan);
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elPriceSpan);
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elPCRequirements);
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
+			const elDevelopersSpan = document.createElement("span");
+			elDevelopersSpan.appendChild(document.createTextNode("Publisher: " + objGamesDetails[nAppID].publishers.toString()));
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(elDevelopersSpan);
+
+			if(objGamesDetails[nAppID].price_overview)
+			{
+				const elPriceSpan = document.createElement("span");
+				elPriceSpan.appendChild(document.createTextNode("Price: " + objGamesDetails[nAppID].price_overview.final_formatted));
+				elDivGameDetails.appendChild(document.createElement("br"));
+				elDivGameDetails.appendChild(document.createElement("br"));
+				elDivGameDetails.appendChild(elPriceSpan);
+			}
+
+			const elPCRequirements = document.createElement("span");
+			elPCRequirements.innerHTML = "PC requirements: " + objGamesDetails[nAppID].pc_requirements.minimum;
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(elPCRequirements);
+		}
 
 		elGameDetailsDiv.appendChild(elDivGameDetails);
 	}
