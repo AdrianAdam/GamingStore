@@ -115,6 +115,11 @@ async function generateLibraryPage()
 	elGamesDiv.style.width = "210px";
 	elGamesDiv.style.overflowY = "scroll";
 
+	const elGameDetailsDiv = document.getElementById("gameDetails");
+	elGameDetailsDiv.style.height = "800px";
+	elGameDetailsDiv.style.marginTop = "10px";
+	elGameDetailsDiv.style.overflowY = "auto";
+
 	let bFirstGame = true;
 
 	for(let i = 0; i < objSteamOwnedGames.response.games.length; i++)
@@ -149,6 +154,8 @@ async function generateLibraryPage()
 						arrGamesDetails[j].style.display = "none";
 					}
 				}
+
+				elGameDetailsDiv.scrollTop = 0;
 			})
 		);
 
@@ -160,11 +167,6 @@ async function generateLibraryPage()
 		elGamesDiv.appendChild(document.createElement("br"));
 
 		// Creates game details page
-		const elGameDetailsDiv = document.getElementById("gameDetails");
-		elGameDetailsDiv.style.height = "800px";
-		elGameDetailsDiv.style.marginTop = "10px";
-		elGameDetailsDiv.style.overflowY = "auto";
-
 		const elTitle = document.createElement("h3");
 		elTitle.innerHTML = objSteamOwnedGames.response.games[i].name;
 
