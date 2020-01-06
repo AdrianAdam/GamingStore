@@ -632,3 +632,61 @@ async function setCommunityPostsWatcher()
 {
 	await backendClient.watchCommunityPosts();
 }
+
+
+/**
+ * Load games into store page.
+ */
+async function loadStorePage()
+{
+	// For now, we will load the current owned games to the store page. There is an API call on Steam that allows us
+	// to get all games, but it's really difficult to manage 10,000+ games. To get their details, with the 200 requests
+	// limit for 5 minutes, we will need more than 250 minutes.
+	const objGames = await backendClient.getStoreGames();
+	const elDiv = document.getElementById("storeGames");
+	elDiv.style.marginTop = "15px";
+
+	for(let nAppID in objGames)
+	{
+		const elGameDiv = document.createElement("div");
+		elGameDiv.style.width = "19%";
+		elGameDiv.style.height = "320px";
+		elGameDiv.style.float = "left";
+		elGameDiv.style.marginRight = "15px";
+		elGameDiv.style.marginBottom = "15px";
+
+		const elImageDiv = document.createElement("div");
+
+		const elHeaderImage = document.createElement("img");
+		elHeaderImage.style.width = "100%";
+		elHeaderImage.style.height = "300px";
+		elHeaderImage.src = objGames[nAppID].header_image;
+		elImageDiv.appendChild(elHeaderImage);
+
+		const elTextDiv = document.createElement("div");
+
+		const elTitleSpan = document.createElement("span");
+		elTitleSpan.appendChild(document.createTextNode(objGames[nAppID].name));
+		elTitleSpan.style.marginLeft = "5px";
+
+		const elPriceSpan = document.createElement("span");
+		if(objGames[nAppID].price_overview)
+		{
+			elPriceSpan.appendChild(document.createTextNode(objGames[nAppID].price_overview.final_formatted));
+		}
+		else
+		{
+			elPriceSpan.appendChild(document.createTextNode("Free"));
+		}
+		elPriceSpan.style.cssFloat = "right";
+		elPriceSpan.style.marginRight = "5px";
+		elTextDiv.appendChild(elTitleSpan);
+		elTextDiv.appendChild(elPriceSpan);
+
+		elGameDiv.appendChild(elImageDiv);
+		elGameDiv.appendChild(elTextDiv);
+		elDiv.appendChild(elGameDiv);
+	}
+
+	elDiv.lastChild.style.marginBottom = "70px";
+}
