@@ -242,6 +242,25 @@ class BackendEndpoint {
 			return objAppIDToGameDetail;
 		}
 	}
+
+
+	/**
+	 * Get the games for Store page.
+	 * 
+	 * @returns {object}
+	 */
+	async getStoreGames()
+	{
+		// For now, we will load the current owned games to the store page. There is an API call on Steam that allows us
+		// to get all games, but it's really difficult to manage 10,000+ games. To get their details, with the 200 requests
+		// limit for 5 minutes, we will need more than 250 minutes.
+
+		if(fs.existsSync("ownedGamesDetails.json"))
+		{
+			const data = fs.readFileSync("ownedGamesDetails.json", "utf-8")
+			return JSON.parse(data);
+		}
+	}
 }
 
 module.exports = BackendEndpoint;

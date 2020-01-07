@@ -92,7 +92,7 @@ input {
 	width: 300px;
 }
 
-#communityPosts {
+#communityPosts .storeGames {
 	float: left;
 	margin-top: 40px;
 	width: 100%;

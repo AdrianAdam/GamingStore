@@ -175,6 +175,17 @@ class BackendClient {
 	{
 		return await backendEndpoint.getGamesDetails(objSteamOwnedGames);
 	}
+
+
+	/**
+	 * Get the games for Store page.
+	 * 
+	 * @returns {object}
+	 */
+	async getStoreGames()
+	{
+		return await backendEndpoint.getStoreGames();
+	}
 }
 
 module.exports = BackendClient;

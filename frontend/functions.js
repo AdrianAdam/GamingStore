@@ -114,7 +114,11 @@ async function generateLibraryPage()
 	elGamesDiv.style.height = "800px";
 	elGamesDiv.style.width = "210px";
 	elGamesDiv.style.overflowY = "scroll";
+
 	const elGameDetailsDiv = document.getElementById("gameDetails");
+	elGameDetailsDiv.style.height = "800px";
+	elGameDetailsDiv.style.marginTop = "10px";
+	elGameDetailsDiv.style.overflowY = "auto";
 
 	let bFirstGame = true;
 
@@ -130,9 +134,10 @@ async function generateLibraryPage()
 		{
 			elAnchorListGames.classList = "btn btn-primary";
 		}
-		elAnchorListGames.style.width = "100%";
 		elAnchorListGames.style.textAlign = "left";
 		elAnchorListGames.style.marginBottom = "10px";
+		elAnchorListGames.style.width = "90%";
+		elAnchorListGames.style.overflow = "hidden";
 		elAnchorListGames.addEventListener(
 			"click",
 			(() => {
@@ -149,6 +154,8 @@ async function generateLibraryPage()
 						arrGamesDetails[j].style.display = "none";
 					}
 				}
+
+				elGameDetailsDiv.scrollTop = 0;
 			})
 		);
 
@@ -197,31 +204,73 @@ async function generateLibraryPage()
 		elDivGameDetails.appendChild(elTitle);
 		elDivGameDetails.appendChild(document.createElement("br"));
 		elDivGameDetails.appendChild(elAnchorGameDetails);
+		elDivGameDetails.appendChild(document.createElement("br"));
+		elDivGameDetails.appendChild(document.createElement("br"));
 
 		const nAppID = objSteamOwnedGames.response.games[i].appid;
-		const elDescriptionSpan = document.createElement("span");
-		elDescriptionSpan.innerHTML = objGamesDetails[nAppID].detailed_description;
-		const elDevelopersSpan = document.createElement("span");
-		elDevelopersSpan.appendChild(document.createTextNode("Publisher: " + objGamesDetails[nAppID].publishers.toString()));
-		const elPriceSpan = document.createElement("span");
-		elPriceSpan.appendChild(document.createTextNode("Price: " + objGamesDetails[nAppID].price_overview.final_formatted));
-		const elPCRequirements = document.createElement("span");
-		elPCRequirements.innerHTML = "PC requirements: " + objGamesDetails[nAppID].pc_requirements.minimum;
+		if(objGamesDetails[nAppID])
+		{
+			const elImgGame = document.createElement("img");
+			elImgGame.src = objGamesDetails[nAppID].header_image;
+			elImgGame.style.width = "800px";
+			elImgGame.style.height = "400px";
+			elImgGame.style.marginLeft = "auto";
+			elImgGame.style.marginRight = "auto";
+			elImgGame.style.display = "block";
+			elDivGameDetails.appendChild(elImgGame);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
 
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elDescriptionSpan);
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elDevelopersSpan);
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elPriceSpan);
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(elPCRequirements);
-		elDivGameDetails.appendChild(document.createElement("br"));
-		elDivGameDetails.appendChild(document.createElement("br"));
+			const elDescriptionSpan = document.createElement("span");
+			elDescriptionSpan.innerHTML = objGamesDetails[nAppID].detailed_description;
+			elDivGameDetails.appendChild(elDescriptionSpan);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+
+			const elCategoriesSpan = document.createElement("span");
+			const arrCategories = [];
+			for(let j = 0; j < objGamesDetails[nAppID].categories.length; j++)
+			{
+				arrCategories.push(objGamesDetails[nAppID].categories[j].description);
+			}
+			elCategoriesSpan.appendChild(document.createTextNode("Categories: " + arrCategories.join(", ")));
+			elDivGameDetails.appendChild(elCategoriesSpan);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+
+			const elDevelopersSpan = document.createElement("span"); 
+			elDevelopersSpan.appendChild(document.createTextNode("Publisher: " + objGamesDetails[nAppID].publishers.toString()));
+			elDivGameDetails.appendChild(elDevelopersSpan);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+
+			const elReleaseDateSpan = document.createElement("span");
+			elReleaseDateSpan.appendChild(document.createTextNode("Release date: " + objGamesDetails[nAppID].release_date.date));
+			elDivGameDetails.appendChild(elReleaseDateSpan);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+
+			if(objGamesDetails[nAppID].price_overview)
+			{
+				const elPriceSpan = document.createElement("span");
+				elPriceSpan.appendChild(document.createTextNode("Price: " + objGamesDetails[nAppID].price_overview.final_formatted));
+				elDivGameDetails.appendChild(elPriceSpan);
+				elDivGameDetails.appendChild(document.createElement("br"));
+				elDivGameDetails.appendChild(document.createElement("br"));
+			}
+
+			const elSupportedLanguages = document.createElement("span");
+			elSupportedLanguages.innerHTML = "Languages: " + objGamesDetails[nAppID].supported_languages;
+			elDivGameDetails.appendChild(elSupportedLanguages);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+
+			const elPCRequirements = document.createElement("span");
+			elPCRequirements.innerHTML = "PC requirements: " + objGamesDetails[nAppID].pc_requirements.minimum;
+			elDivGameDetails.appendChild(elPCRequirements);
+			elDivGameDetails.appendChild(document.createElement("br"));
+			elDivGameDetails.appendChild(document.createElement("br"));
+		}
 
 		elGameDetailsDiv.appendChild(elDivGameDetails);
 	}
@@ -357,6 +406,7 @@ async function displayCommunityPosts(arrPosts=undefined)
 {
 	const elCommunityPosts = document.getElementById("communityPosts");
 	elCommunityPosts.innerHTML = "";
+	elCommunityPosts.style.marginBottom = "70px";
 
 	const elCreatePostDiv = document.createElement("div");
 	const elPostTextArea = document.createElement("textarea");
@@ -436,47 +486,72 @@ async function displayCommunityPosts(arrPosts=undefined)
 			elTextSpan.style.marginLeft = "5px";
 			elTextSpan.style.marginRight = "5px";
 
-			const arrLink = elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm);
+			const arrLink = elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+(\/[0-9]+)?/gm);
 			let nLinkIndex = 0;
 			if(arrLink)
 			{
-				const arrSplitPost = elPost.post.split(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm)
+				let arrSplitPost;
+				if(elPost.post.match(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+\/[0-9]+/gm))
+				{
+					arrSplitPost = elPost.post.split(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+\/[0-9]+/gm);
+				}
+				else
+				{
+					arrSplitPost = elPost.post.split(/\s{0,}[a-z]+:\/\/[a-z\.]+\/[A-Za-z0-9?=]+/gm);
+				}
 				for(let strPartialPost of arrSplitPost)
 				{
-					const strLink = arrLink[nLinkIndex]
+					const strLink = arrLink[nLinkIndex];
 					const elAnchor = document.createElement("a");
 					elAnchor.appendChild(document.createTextNode(strLink));
 					elAnchor.classList = "btn";
 					elAnchor.addEventListener(
 						"click",
 						() => {
-							if(strLink.match(/\s{0,}[a-z]+:\/\/www\.twitch\.tv\/[A-Za-z0-9?=]+/gm))
+							if(strLink.match(/\s{0,}[a-z]+:\/\/www\.twitch\.tv\/[A-Za-z0-9?=]+\/[0-9]+/gm))
 							{
 								const arrTwitchSplit = strLink.split("/");
-								const strChannelName = arrTwitchSplit[arrTwitchSplit.length - 1];
+								const strTwitchVideoID = arrTwitchSplit[arrTwitchSplit.length - 1];
 								if(twitchPlayer)
 								{
-									twitchPlayer.setChannel(strChannelName);
+									twitchPlayer.setVideo(strTwitchVideoID);
 								}
 								else
 								{
-									twitchPlayer = new Twitch.Player("socialMediaTwitch", { width: 720, height: 480, channel: strChannelName });
+									twitchPlayer = new Twitch.Player("socialMediaTwitch", { width: 720, height: 480, video: strTwitchVideoID });
 									twitchPlayer.setVolume(0.5);
 								}
 							}
-							else if(strLink.match(/\s{0,}[a-z]+:\/\/www\.youtube\.com\/[A-Za-z0-9?=]+/gm))
+							else 
 							{
-								const arrYoutbeSplit = strLink.split("/");
-								const strVideoID = arrYoutbeSplit[arrYoutbeSplit.length - 1].split("=")[1];
-								if(youtubePlayer)
+								if(strLink.match(/\s{0,}[a-z]+:\/\/www\.twitch\.tv\/[A-Za-z0-9?=]+/gm))
 								{
-									youtubePlayer.load(strVideoID, /* bAutoplay */ true);
+									const arrTwitchSplit = strLink.split("/");
+									const strChannelName = arrTwitchSplit[arrTwitchSplit.length - 1];
+									if(twitchPlayer)
+									{
+										twitchPlayer.setChannel(strChannelName);
+									}
+									else
+									{
+										twitchPlayer = new Twitch.Player("socialMediaTwitch", { width: 720, height: 480, channel: strChannelName });
+										twitchPlayer.setVolume(0.5);
+									}
 								}
-								else
+								else if(strLink.match(/\s{0,}[a-z]+:\/\/www\.youtube\.com\/[A-Za-z0-9?=]+/gm))
 								{
-									youtubePlayer = new YTPlayer("#socialMediaYoutube", { width: 720, height: 480 });
-									youtubePlayer.load(strVideoID, /* bAutoplay */ true);
-									youtubePlayer.setVolume(50);
+									const arrYoutbeSplit = strLink.split("/");
+									const strYoutubeVideoID = arrYoutbeSplit[arrYoutbeSplit.length - 1].split("=")[1];
+									if(youtubePlayer)
+									{
+										youtubePlayer.load(strYoutubeVideoID, /* bAutoplay */ true);
+									}
+									else
+									{
+										youtubePlayer = new YTPlayer("#socialMediaYoutube", { width: 720, height: 480 });
+										youtubePlayer.load(strYoutubeVideoID, /* bAutoplay */ true);
+										youtubePlayer.setVolume(50);
+									}
 								}
 							}
 						}
@@ -558,4 +633,62 @@ async function displayCommunityPosts(arrPosts=undefined)
 async function setCommunityPostsWatcher()
 {
 	await backendClient.watchCommunityPosts();
+}
+
+
+/**
+ * Load games into store page.
+ */
+async function loadStorePage()
+{
+	// For now, we will load the current owned games to the store page. There is an API call on Steam that allows us
+	// to get all games, but it's really difficult to manage 10,000+ games. To get their details, with the 200 requests
+	// limit for 5 minutes, we will need more than 250 minutes.
+	const objGames = await backendClient.getStoreGames();
+	const elDiv = document.getElementById("storeGames");
+	elDiv.style.marginTop = "15px";
+
+	for(let nAppID in objGames)
+	{
+		const elGameDiv = document.createElement("div");
+		elGameDiv.style.width = "19%";
+		elGameDiv.style.height = "320px";
+		elGameDiv.style.float = "left";
+		elGameDiv.style.marginRight = "15px";
+		elGameDiv.style.marginBottom = "15px";
+
+		const elImageDiv = document.createElement("div");
+
+		const elHeaderImage = document.createElement("img");
+		elHeaderImage.style.width = "100%";
+		elHeaderImage.style.height = "300px";
+		elHeaderImage.src = objGames[nAppID].header_image;
+		elImageDiv.appendChild(elHeaderImage);
+
+		const elTextDiv = document.createElement("div");
+
+		const elTitleSpan = document.createElement("span");
+		elTitleSpan.appendChild(document.createTextNode(objGames[nAppID].name));
+		elTitleSpan.style.marginLeft = "5px";
+
+		const elPriceSpan = document.createElement("span");
+		if(objGames[nAppID].price_overview)
+		{
+			elPriceSpan.appendChild(document.createTextNode(objGames[nAppID].price_overview.final_formatted));
+		}
+		else
+		{
+			elPriceSpan.appendChild(document.createTextNode("Free"));
+		}
+		elPriceSpan.style.cssFloat = "right";
+		elPriceSpan.style.marginRight = "5px";
+		elTextDiv.appendChild(elTitleSpan);
+		elTextDiv.appendChild(elPriceSpan);
+
+		elGameDiv.appendChild(elImageDiv);
+		elGameDiv.appendChild(elTextDiv);
+		elDiv.appendChild(elGameDiv);
+	}
+
+	elDiv.lastChild.style.marginBottom = "70px";
 }
