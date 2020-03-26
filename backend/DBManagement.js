@@ -141,14 +141,83 @@ class DBManagement {
 
 		if(user)
 		{
-			const strNewPostKey = firebase.database().ref("friends/").child(user.displayName).push().key;
-			await firebase.database().ref("friends/").child(user.displayName + "/" + strNewPostKey).update({ username: strFriendUsername }, (error) => {
+			let strNewPostKey = firebase.database().ref("friends/").child(user.displayName).push().key;
+			await firebase.database().ref("friends/").child(user.displayName + "/" + strNewPostKey).update({ username: strFriendUsername, status: "pending", initiator: user.displayName }, (error) => {
 				if(error)
 				{
 					console.error(error);
 					bHadError = true;
 					strErrorMessage = error.message;
 				}
+			});
+
+			strNewPostKey = firebase.database().ref("friends/").child(strFriendUsername).push().key;
+			await firebase.database().ref("friends/").child(strFriendUsername + "/" + strNewPostKey).update({ username: user.displayName, status: "pending", initiator: user.displayName }, (error) => {
+				if(error)
+				{
+					console.error(error);
+					bHadError = true;
+					strErrorMessage = error.message;
+				}
+			});
+		}
+
+		if(!bHadError)
+		{
+			return "Success";
+		}
+		else
+		{
+			return strErrorMessage;
+		}
+	}
+
+
+	/**
+	 * Confirms a friend request.
+	 * 
+	 * @param {string} strFriendUsername 
+	 * 
+	 * @returns {string}
+	 */
+	async confirmFriendRequest(strFriendUsername)
+	{
+		let bHadError = false;
+		let strErrorMessage = "";
+		const user = await firebase.auth().currentUser;
+
+		if(user)
+		{
+			await firebase.database().ref("friends/" + user.displayName).once("value").then((snapshot) => {
+				snapshot.forEach((item) => {
+					if(item.val().username === strFriendUsername)
+					{
+						firebase.database().ref("friends/" + user.displayName).child(item.key).update({ username: strFriendUsername, status: "confirmed" }, (error) => {
+							if(error)
+							{
+								console.error(error);
+								bHadError = true;
+								strErrorMessage = error.message;
+							}
+						});
+					}
+				})
+			});
+
+			await firebase.database().ref("friends/" + strFriendUsername).once("value").then((snapshot) => {
+				snapshot.forEach((item) => {
+					if(item.val().username === user.displayName)
+					{
+						firebase.database().ref("friends/" + strFriendUsername).child(item.key).update({ username: user.displayName, status: "confirmed" }, (error) => {
+							if(error)
+							{
+								console.error(error);
+								bHadError = true;
+								strErrorMessage = error.message;
+							}
+						});
+					}
+				})
 			});
 		}
 
@@ -183,6 +252,19 @@ class DBManagement {
 					if(item.val().username === strFriendUsername)
 					{
 						firebase.database().ref("friends/" + user.displayName).child(item.key).remove()
+							.catch((error) => {
+								bHadError = true;
+								strErrorMessage = error.message;
+						});
+					}
+				})
+			});
+
+			await firebase.database().ref("friends/" + strFriendUsername).once("value").then((snapshot) => {
+				snapshot.forEach((item) => {
+					if(item.val().username === user.displayName)
+					{
+						firebase.database().ref("friends/" + strFriendUsername).child(item.key).remove()
 							.catch((error) => {
 								bHadError = true;
 								strErrorMessage = error.message;
@@ -228,6 +310,54 @@ class DBManagement {
 		}
 
 		return bFound;
+	}
+
+
+	/**
+	 * Watch for changes in DB and update friends list in frontend.
+	 */
+	async watchFriendsList()
+	{
+		const user = await firebase.auth().currentUser;
+
+		if(user)
+		{
+			const watcherFriendsList = await firebase.database().ref(`friends/${user.displayName}`);
+			watcherFriendsList.on(
+				"value",
+				(snapshot) => {
+					const arrFriends = [];
+					let objFriend = {};
+					let nIndex = 0;
+
+					snapshot.forEach((usersData) => {
+						usersData.forEach((userData) => {
+							if(nIndex !== 3)
+							{
+								objFriend[userData.key] = userData.node_.value_;
+								nIndex++
+							}
+							else
+							{
+								nIndex = 0;
+								arrFriends.push(objFriend);
+								objFriend = {};
+
+								objFriend[userData.key] = userData.node_.value_;
+								nIndex++
+							}
+						})
+					});
+
+					if(Object.keys(objFriend).length)
+					{
+						arrFriends.push(objFriend);
+					}
+
+					frontendClient.updateFriendsList(arrFriends);
+				}
+			);
+		}
 	}
 
 

@@ -62,7 +62,16 @@
 		</section>
 
 		<section class="pages profile" style="display: none">
-
+			<div id=profileHead style="width: 100%;">
+				<h2>Steam</h2>
+				<div id=steamData>
+					<div id=steamProfileData style="width: 230px; float: left;"></div>
+					<div id=steamLastPlayedGames></div>
+				</div>
+			</div>
+			<div id=profileBody style="width: 100%;">
+				<div id=friendsList></div>
+			</div>
 		</section>
 
 		<footer>
@@ -86,6 +95,7 @@
 		checkLoginStatus();
 		initializeFriendsFunctions();
 		displayCommunityPosts();
-		setTimeout(() => { setCommunityPostsWatcher(); }, 1.5 * 1000);
+		setTimeout(() => { startWatchers() }, 1.5 * 1000);
+		initializeHeadOfProfilePage();
 	</script>
 </html>

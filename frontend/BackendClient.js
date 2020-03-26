@@ -123,6 +123,15 @@ class BackendClient {
 
 
 	/**
+	 * Watch for changes in DB and update friends list in frontend.
+	 */
+	async watchFriendsList()
+	{
+		await backendEndpoint.watchFriendsList();
+	}
+
+
+	/**
 	 * Create a new post for the current user.
 	 * 
 	 * @param {string} strPostText 
@@ -178,6 +187,19 @@ class BackendClient {
 
 
 	/**
+	 * Get details for a certain game.
+	 * 
+	 * @param {string} nAppID 
+	 * 
+	 * @returns {object}
+	 */
+	async getGameDetails(nAppID)
+	{
+		return await backendEndpoint.getGameDetails(nAppID);
+	}
+
+
+	/**
 	 * Get the games for Store page.
 	 * 
 	 * @returns {object}
@@ -185,6 +207,17 @@ class BackendClient {
 	async getStoreGames()
 	{
 		return await backendEndpoint.getStoreGames();
+	}
+
+
+	/**
+	 * Get the Steam user data.
+	 * 
+	 * @returns {object}
+	 */
+	async getSteamUserData()
+	{
+		return await backendEndpoint.getSteamUserData();
 	}
 }
 

@@ -628,11 +628,12 @@ async function displayCommunityPosts(arrPosts=undefined)
 
 
 /**
- * Starts the watcher for posts.
+ * Starts the watchers.
  */
-async function setCommunityPostsWatcher()
+async function startWatchers()
 {
 	await backendClient.watchCommunityPosts();
+	await backendClient.watchFriendsList();
 }
 
 
@@ -691,4 +692,85 @@ async function loadStorePage()
 	}
 
 	elDiv.lastChild.style.marginBottom = "70px";
+}
+
+
+/**
+ * Initialize profile page with Steam data and Firebase friends list.
+ */
+async function initializeHeadOfProfilePage()
+{
+	const objSteamUserData = await backendClient.getSteamUserData();
+
+	const elDivSteamProfileData = document.getElementById("steamProfileData");
+	const elDivSteamLastPlayedGames = document.getElementById("steamLastPlayedGames");
+
+	// Steam profile
+	const elProfileName = document.createElement("h3");
+	elProfileName.textContent = objSteamUserData[0].personaname;
+
+	const elProfileImg = document.createElement("img");
+	elProfileImg.src = objSteamUserData[0].avatarfull;
+
+	const elSpanLastTimeOnline = document.createElement("span");
+
+	const objDate = new Date(null);
+	objDate.setSeconds(objSteamUserData[0].lastlogoff);
+	let strTime = objDate.toISOString().replace("T", " ");
+	strTime = strTime.substring(0, strTime.indexOf("."));
+
+	elSpanLastTimeOnline.textContent = `Last online: ${strTime}.`;
+
+	elDivSteamProfileData.appendChild(elProfileImg);
+	elDivSteamProfileData.appendChild(elProfileName);
+	elDivSteamProfileData.appendChild(elSpanLastTimeOnline);
+
+	// Steam games
+	for(let i = 0; i < objSteamUserData[1].length; i++)
+	{
+		const elGameDiv = document.createElement("div");
+		elGameDiv.style.width = "360px";
+		elGameDiv.style.float = "left";
+
+		const elGameImg = document.createElement("img");
+		const objCurrentGame = await backendClient.getGameDetails(objSteamUserData[1][i].appid);
+		elGameImg.src = objCurrentGame.header_image;
+		elGameImg.style.width = "350px";
+		elGameImg.style.height = "200px";
+
+		const elGameName = document.createElement("h4");
+		elGameName.textContent = objSteamUserData[1][i].npostsame;
+
+		const elPlaytimeLastTwoWeeks = document.createElement("h5");
+		let nHours = (objSteamUserData[1][i].playtime_2weeks / 60);
+		let nHoursFloored = Math.floor(nHours);
+		let nMinutes = (nHours - nHoursFloored) * 60;
+		let nMinutesFloored = Math.round(nMinutes);
+		elPlaytimeLastTwoWeeks.textContent = `Last two weeks: ${nHoursFloored} hours, ${nMinutesFloored} minutes`;
+
+		const elPlaytimeForever = document.createElement("h5");
+		nHours = (objSteamUserData[1][i].playtime_forever / 60);
+		nHoursFloored = Math.floor(nHours);
+		nMinutes = (nHours - nHoursFloored) * 60;
+		nMinutesFloored = Math.round(nMinutes);
+		elPlaytimeForever.textContent = `Forever: ${nHoursFloored} hours, ${nMinutesFloored} minutes`;
+
+		elGameDiv.appendChild(elGameImg);
+		elGameDiv.appendChild(elGameName);
+		elGameDiv.appendChild(elPlaytimeLastTwoWeeks);
+		elGameDiv.appendChild(elPlaytimeForever);
+
+		elDivSteamLastPlayedGames.appendChild(elGameDiv);
+	}
+}
+
+
+/**
+ * Update friends list when a change occurs in DB.
+ * 
+ * @param {object} objFriendsList 
+ */
+async function updateFriendsList(objFriendsList)
+{
+	// TODO: display friends.
 }

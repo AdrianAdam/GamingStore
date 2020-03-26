@@ -36,6 +36,17 @@ class FrontendClient {
 	{
 		frontendEndpoint.updateCommunityPosts(arrPosts);
 	}
+
+
+	/**
+	 * Update the friends list
+	 * 
+	 * @param {array} arrFriends 
+	 */
+	async updateFriendsList(arrFriends)
+	{
+		frontendEndpoint.updateFriendsList(arrFriends);
+	}
 }
 
 module.exports = FrontendClient;

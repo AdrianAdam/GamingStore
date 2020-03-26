@@ -153,6 +153,15 @@ class BackendEndpoint {
 
 
 	/**
+	 * Watch for changes in DB and update friends list in frontend.
+	 */
+	async watchFriendsList()
+	{
+		await DB.watchFriendsList();
+	}
+
+
+	/**
 	 * Create a new post for the current user.
 	 * 
 	 * @param {string} strPostText 
@@ -245,6 +254,33 @@ class BackendEndpoint {
 
 
 	/**
+	 * Get details for a certain game.
+	 * 
+	 * @param {string} nAppID 
+	 * 
+	 * @returns {object}
+	 */
+	async getGameDetails(nAppID)
+	{
+		// Limit the number of calls to Steam API where we can.
+		if(fs.existsSync("ownedGamesDetails.json"))
+		{
+			const data = fs.readFileSync("ownedGamesDetails.json", "utf-8");
+			const json = JSON.parse(data);
+
+			return json[nAppID];
+		}
+		else
+		{
+			const response = await fetch(`https://store.steampowered.com/api/appdetails?appids=${nAppID}`);
+			const json = await response.json();
+
+			return json[nAppID]["data"];
+		}
+	}
+
+
+	/**
 	 * Get the games for Store page.
 	 * 
 	 * @returns {object}
@@ -260,6 +296,28 @@ class BackendEndpoint {
 			const data = fs.readFileSync("ownedGamesDetails.json", "utf-8")
 			return JSON.parse(data);
 		}
+	}
+
+
+	/**
+	 * Get the Steam user data.
+	 * 
+	 * @returns {object}
+	 */
+	async getSteamUserData()
+	{
+		const objSteamUserData = [];
+		let response = await fetch(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${fs.readFileSync("privateSteamAPIKey.json", "utf-8").replace(/\s/g,"")}&steamids=${fs.readFileSync("privateSteamUserID.json", "utf-8").replace(/\s/g,"")}&format=json`);
+		let json = await response.json();
+
+		objSteamUserData.push(json.response.players[0]);
+
+		response = await fetch(`http://api.steampowered.com/IPlayerService/GetRecentlyPlayedGames/v0001/?key=${fs.readFileSync("privateSteamAPIKey.json", "utf-8").replace(/\s/g,"")}&steamid=${fs.readFileSync("privateSteamUserID.json", "utf-8").replace(/\s/g,"")}&format=json`)
+		json = await response.json();
+
+		objSteamUserData.push(json.response.games);
+
+		return objSteamUserData;
 	}
 }
 
