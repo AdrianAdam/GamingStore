@@ -123,6 +123,19 @@ class BackendClient {
 
 
 	/**
+	 * Confirms a friend request.
+	 * 
+	 * @param {string} strFriendUsername 
+	 * 
+	 * @returns {string}
+	 */
+	async confirmFriendRequest(strFriendUsername)
+	{
+		return await backendEndpoint.confirmFriendRequest(strFriendUsername);
+	}
+
+
+	/**
 	 * Watch for changes in DB and update friends list in frontend.
 	 */
 	async watchFriendsList()

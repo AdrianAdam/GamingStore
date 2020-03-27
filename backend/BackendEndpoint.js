@@ -153,6 +153,19 @@ class BackendEndpoint {
 
 
 	/**
+	 * Confirms a friend request.
+	 * 
+	 * @param {string} strFriendUsername 
+	 * 
+	 * @returns {string}
+	 */
+	async confirmFriendRequest(strFriendUsername)
+	{
+		return await DB.confirmFriendRequest(strFriendUsername);
+	}
+
+
+	/**
 	 * Watch for changes in DB and update friends list in frontend.
 	 */
 	async watchFriendsList()

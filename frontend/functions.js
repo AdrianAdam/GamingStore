@@ -624,6 +624,8 @@ async function displayCommunityPosts(arrPosts=undefined)
 			nPostIndex++;
 		}
 	}
+
+	elCommunityPosts.lastChild.style.marginBottom = "70px";
 }
 
 
@@ -772,5 +774,68 @@ async function initializeHeadOfProfilePage()
  */
 async function updateFriendsList(objFriendsList)
 {
-	// TODO: display friends.
+	const elFriendsListPendingDiv = document.getElementById("friendsListPending");
+	const elFriendsListConfirmedDiv = document.getElementById("friendsListConfirmed");
+
+	elFriendsListPendingDiv.innerHTML = "";
+	elFriendsListConfirmedDiv.innerHTML = "";
+
+	for(let i = 0; i < objFriendsList.length; i++)
+	{
+		const elUsername = document.createElement("h3");
+		elUsername.textContent = objFriendsList[i].username;
+
+		if(objFriendsList[i].status === "pending")
+		{
+			elFriendsListPendingDiv.appendChild(elUsername);
+
+			if(objFriendsList[i].initiator === document.getElementById("userDisplayName").textContent)
+			{
+				elFriendsListPendingDiv.appendChild(document.createTextNode(" Pending"));
+			}
+			else
+			{
+				const elConfirmButton = document.createElement("a");
+				const elConfirmSpan = document.createElement("span");
+				const elRemoveButton = document.createElement("a");
+				const elRemoveSpan = document.createElement("span");
+
+				elConfirmButton.style.marginRight = "10px";
+				elConfirmButton.classList = "btn btn-success btn-xs";
+				elConfirmSpan.classList = "glyphicon glyphicon-ok";
+				elRemoveButton.classList = "btn btn-danger btn-xs";
+				elRemoveSpan.classList = "glyphicon glyphicon-remove";
+
+				elConfirmButton.appendChild(elConfirmSpan);
+				elRemoveButton.appendChild(elRemoveSpan);
+				elConfirmButton.appendChild(document.createTextNode(" Confirm"));
+				elRemoveButton.appendChild(document.createTextNode(" Remove"));
+
+				elConfirmButton.addEventListener(
+					"click",
+					async () => {
+						const strResponse = await backendClient.confirmFriendRequest(objFriendsList[i].username);
+
+						alert(strResponse);
+					}
+				);
+
+				elRemoveButton.addEventListener(
+					"click",
+					async () => {
+						const strResponse = await backendClient.removeFriend(objFriendsList[i].username);
+
+						alert(strResponse);
+					}
+				);
+
+				elFriendsListPendingDiv.appendChild(elConfirmButton);
+				elFriendsListPendingDiv.appendChild(elRemoveButton);
+			}
+		}
+		else
+		{
+			elFriendsListConfirmedDiv.appendChild(elUsername);
+		}
+	}
 }
