@@ -624,15 +624,18 @@ async function displayCommunityPosts(arrPosts=undefined)
 			nPostIndex++;
 		}
 	}
+
+	elCommunityPosts.lastChild.style.marginBottom = "70px";
 }
 
 
 /**
- * Starts the watcher for posts.
+ * Starts the watchers.
  */
-async function setCommunityPostsWatcher()
+async function startWatchers()
 {
 	await backendClient.watchCommunityPosts();
+	await backendClient.watchFriendsList();
 }
 
 
@@ -691,4 +694,148 @@ async function loadStorePage()
 	}
 
 	elDiv.lastChild.style.marginBottom = "70px";
+}
+
+
+/**
+ * Initialize profile page with Steam data and Firebase friends list.
+ */
+async function initializeHeadOfProfilePage()
+{
+	const objSteamUserData = await backendClient.getSteamUserData();
+
+	const elDivSteamProfileData = document.getElementById("steamProfileData");
+	const elDivSteamLastPlayedGames = document.getElementById("steamLastPlayedGames");
+
+	// Steam profile
+	const elProfileName = document.createElement("h3");
+	elProfileName.textContent = objSteamUserData[0].personaname;
+
+	const elProfileImg = document.createElement("img");
+	elProfileImg.src = objSteamUserData[0].avatarfull;
+
+	const elSpanLastTimeOnline = document.createElement("span");
+
+	const objDate = new Date(null);
+	objDate.setSeconds(objSteamUserData[0].lastlogoff);
+	let strTime = objDate.toISOString().replace("T", " ");
+	strTime = strTime.substring(0, strTime.indexOf("."));
+
+	elSpanLastTimeOnline.textContent = `Last online: ${strTime}.`;
+
+	elDivSteamProfileData.appendChild(elProfileImg);
+	elDivSteamProfileData.appendChild(elProfileName);
+	elDivSteamProfileData.appendChild(elSpanLastTimeOnline);
+
+	// Steam games
+	for(let i = 0; i < objSteamUserData[1].length; i++)
+	{
+		const elGameDiv = document.createElement("div");
+		elGameDiv.style.width = "360px";
+		elGameDiv.style.float = "left";
+
+		const elGameImg = document.createElement("img");
+		const objCurrentGame = await backendClient.getGameDetails(objSteamUserData[1][i].appid);
+		elGameImg.src = objCurrentGame.header_image;
+		elGameImg.style.width = "350px";
+		elGameImg.style.height = "200px";
+
+		const elGameName = document.createElement("h4");
+		elGameName.textContent = objSteamUserData[1][i].npostsame;
+
+		const elPlaytimeLastTwoWeeks = document.createElement("h5");
+		let nHours = (objSteamUserData[1][i].playtime_2weeks / 60);
+		let nHoursFloored = Math.floor(nHours);
+		let nMinutes = (nHours - nHoursFloored) * 60;
+		let nMinutesFloored = Math.round(nMinutes);
+		elPlaytimeLastTwoWeeks.textContent = `Last two weeks: ${nHoursFloored} hours, ${nMinutesFloored} minutes`;
+
+		const elPlaytimeForever = document.createElement("h5");
+		nHours = (objSteamUserData[1][i].playtime_forever / 60);
+		nHoursFloored = Math.floor(nHours);
+		nMinutes = (nHours - nHoursFloored) * 60;
+		nMinutesFloored = Math.round(nMinutes);
+		elPlaytimeForever.textContent = `Forever: ${nHoursFloored} hours, ${nMinutesFloored} minutes`;
+
+		elGameDiv.appendChild(elGameImg);
+		elGameDiv.appendChild(elGameName);
+		elGameDiv.appendChild(elPlaytimeLastTwoWeeks);
+		elGameDiv.appendChild(elPlaytimeForever);
+
+		elDivSteamLastPlayedGames.appendChild(elGameDiv);
+	}
+}
+
+
+/**
+ * Update friends list when a change occurs in DB.
+ * 
+ * @param {object} objFriendsList 
+ */
+async function updateFriendsList(objFriendsList)
+{
+	const elFriendsListPendingDiv = document.getElementById("friendsListPending");
+	const elFriendsListConfirmedDiv = document.getElementById("friendsListConfirmed");
+
+	elFriendsListPendingDiv.innerHTML = "";
+	elFriendsListConfirmedDiv.innerHTML = "";
+
+	for(let i = 0; i < objFriendsList.length; i++)
+	{
+		const elUsername = document.createElement("h3");
+		elUsername.textContent = objFriendsList[i].username;
+
+		if(objFriendsList[i].status === "pending")
+		{
+			elFriendsListPendingDiv.appendChild(elUsername);
+
+			if(objFriendsList[i].initiator === document.getElementById("userDisplayName").textContent)
+			{
+				elFriendsListPendingDiv.appendChild(document.createTextNode(" Pending"));
+			}
+			else
+			{
+				const elConfirmButton = document.createElement("a");
+				const elConfirmSpan = document.createElement("span");
+				const elRemoveButton = document.createElement("a");
+				const elRemoveSpan = document.createElement("span");
+
+				elConfirmButton.style.marginRight = "10px";
+				elConfirmButton.classList = "btn btn-success btn-xs";
+				elConfirmSpan.classList = "glyphicon glyphicon-ok";
+				elRemoveButton.classList = "btn btn-danger btn-xs";
+				elRemoveSpan.classList = "glyphicon glyphicon-remove";
+
+				elConfirmButton.appendChild(elConfirmSpan);
+				elRemoveButton.appendChild(elRemoveSpan);
+				elConfirmButton.appendChild(document.createTextNode(" Confirm"));
+				elRemoveButton.appendChild(document.createTextNode(" Remove"));
+
+				elConfirmButton.addEventListener(
+					"click",
+					async () => {
+						const strResponse = await backendClient.confirmFriendRequest(objFriendsList[i].username);
+
+						alert(strResponse);
+					}
+				);
+
+				elRemoveButton.addEventListener(
+					"click",
+					async () => {
+						const strResponse = await backendClient.removeFriend(objFriendsList[i].username);
+
+						alert(strResponse);
+					}
+				);
+
+				elFriendsListPendingDiv.appendChild(elConfirmButton);
+				elFriendsListPendingDiv.appendChild(elRemoveButton);
+			}
+		}
+		else
+		{
+			elFriendsListConfirmedDiv.appendChild(elUsername);
+		}
+	}
 }

@@ -60,6 +60,17 @@ class FrontendEndpoint {
 	{
 		displayCommunityPosts(arrPosts);
 	}
+
+
+	/**
+	 * Update the friends list
+	 * 
+	 * @param {array} arrFriends 
+	 */
+	async updateFriendsList(arrFriends)
+	{
+		updateFriendsList(arrFriends);
+	}
 }
 
 module.exports = FrontendEndpoint;
